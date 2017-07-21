@@ -27,13 +27,13 @@ pod "FKWidgetSheet"
 
 FKWidgetSheet can present any object that conforms to 'FKWidgetSheetContentProtocol'.
 UIViewController and UINavigationController extensions are provided out of the box.
-Take a look at them in 'FKWidgetSheet.swift' file to get an idea.
+Take a look at them in '[FKWidgetSheet.swift](/FKWidgetSheet/Classes/FKWidgetSheet.swift)' file to get an idea.
 
 
 To present a view controller or a navigation controller from any view controller
 
 ```swift
-<present instance>.present(inWidgetSheet: <view controller instance>, animated: true)
+<presenter instance>.present(inWidgetSheet: <view controller instance>, animated: true)
 ```
 
 To dismiss the action sheet from content view controller
@@ -46,7 +46,7 @@ To provide a scroll view to observe from a view controller
 
 ```swift
 override func scrollViewToObserve(containedIn widgetSheet: FKWidgetSheet) -> UIScrollView? {
-    return table
+    return <scrollview instance>
 }
 ```
 
@@ -72,7 +72,7 @@ public var backgroundImage: UIImage?
 public var backgroundView: UIView? 
 ```
 
-###FKWidgetSheetDelegate
+### FKWidgetSheetDelegate
 
 Use delegate to get callbacks. Delegate conforms to 'FKWidgetSheetDelegate'.
 
@@ -94,7 +94,7 @@ Use them if you'd wanna update some thing in content on appearance transitions.
 @objc optional func widgetSheetWillDisappear(_ sheet: FKWidgetSheet)
 @objc optional func widgetSheetDidDisappear(_ sheet: FKWidgetSheet)
 ```
-###FKWidgetSheetContentProtocol
+### FKWidgetSheetContentProtocol
 
 Return a content view using this from content controller
 
@@ -102,7 +102,7 @@ Return a content view using this from content controller
 var view: UIView! {get}
 ```
 
-Prepare for content view lifecycle events using these (Checkout UIViewController extension in 'FKWidgetSheet.swift')
+Prepare for content view lifecycle events using these (Checkout UIViewController extension in [FKWidgetSheet.swift](/FKWidgetSheet/Classes/FKWidgetSheet.swift))
 
 ```swift
 @objc optional func widgetSheetWillAddContent(_ sheet: FKWidgetSheet)
@@ -111,7 +111,7 @@ Prepare for content view lifecycle events using these (Checkout UIViewController
 @objc optional func widgetSheetDidRemoveContent(_ sheet: FKWidgetSheet)
 ```
 
-Configure behaviour using these (Checkout 'SecondViewController.swift' and UIViewController extension in 'FKWidgetSheet.swift')
+Configure behaviour using these (Checkout [SecondViewController.swift](/Example/FKWidgetSheet/SecondViewController.swift) and UIViewController extension in [FKWidgetSheet.swift](/FKWidgetSheet/Classes/FKWidgetSheet.swift))
 
 ```swift
 @objc optional func collapsedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat
@@ -137,7 +137,7 @@ let widgetSheet = FKWidgetSheet(content: <FKWidgetSheetContentProtocol instance>
 
 ## Author
 
-rajatgupta26, rajat.g@flipkart.com
+rajatgupta26, rajatkumargupta89@gmail.com
 
 ## License
 
