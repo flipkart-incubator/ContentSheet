@@ -33,7 +33,7 @@ fileprivate let TotalDuration: Double = 0.5
 @objc public protocol FKWidgetSheetContentProtocol {
     
     //View to be set as content
-    var view: UIView? {get}
+    var view: UIView! {get}
     
     @objc optional func widgetSheetWillAddContent(_ sheet: FKWidgetSheet)
     @objc optional func widgetSheetDidAddContent(_ sheet: FKWidgetSheet)
