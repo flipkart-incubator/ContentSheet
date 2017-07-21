@@ -53,26 +53,19 @@ class SecondViewController: UIViewController {
     }
     
     
-//    var collapsedHeight: CGFloat = UIScreen.main.bounds.height*0.5
-//    var expandedHeight: CGFloat = UIScreen.main.bounds.height
-//    var scrollViewToObserve: UIScrollView {
-//        get {
-//            return table
-//        }
-//    }
+    override open func collapsedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat {
+        return UIScreen.main.bounds.height*0.5
+    }
+    
+    //Returning the same height as collapsed height by default
+    override open func expandedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat {
+        return UIScreen.main.bounds.height
+    }
+    
 
     override func scrollViewToObserve(containedIn widgetSheet: FKWidgetSheet) -> UIScrollView? {
         return table
     }
-    
-//    override func collapsedHeight() -> CGFloat {
-//        return UIScreen.main.bounds.height*0.8
-//    }
-    
-//    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        super.touchesEnded(touches, with: event)
-////        self.widgetSheet()?.dismiss(animated: true, completion: nil)
-//    }
 }
 
 

@@ -11,8 +11,8 @@ Pod::Spec.new do |s|
 # ―――  Spec Metadata  ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
 s.name         = "FKWidgetSheet"
-s.version      = "0.1.0"
-s.summary      = "A simple control that enables presenting any view controller or navigation controller or any other object that can provide a view like an ActionSheet"
+s.version      = "0.1.1"
+s.summary      = "A simple control that enables presenting any view controller or any other object that can provide a view like an ActionSheet"
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -72,7 +72,7 @@ s.platform     = :ios, "8.0"
 #  Supports git, hg, bzr, svn and HTTP.
 #
 
-s.source       = { :git => "https://github.com/rajatgupta26/FKWidgetSheet.git", :tag => "0.1.0" }
+s.source       = { :git => "https://github.com/rajatgupta26/FKWidgetSheet.git", :tag => "0.1.1" }
 
 
 # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #

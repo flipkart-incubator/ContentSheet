@@ -171,6 +171,13 @@ public class FKWidgetSheet: UIViewController {
     //Delegate
     public weak var delegate: FKWidgetSheetDelegate?
     
+    //Gesture
+    fileprivate lazy var _panGesture: UIPanGestureRecognizer = {
+        let gesture = UIPanGestureRecognizer.init(target: self, action: #selector(handlePan(_:)))
+        gesture.delegate = self
+        return gesture
+    } ()
+    
     
     //MARK: Initializers
     //Not implementing required initializer
@@ -251,10 +258,11 @@ public class FKWidgetSheet: UIViewController {
                 // e.g. in case of view controllers, they might wanna end the appearance transitions
                 _content.widgetSheetDidAddContent?(self)
                 
-                //Check if there is a scrollview to observer
-                let gesture = UIPanGestureRecognizer.init(target: self, action: #selector(handlePan(_:)))
-                gesture.delegate = self
-                _contentView?.addGestureRecognizer(gesture)
+                //Only add pan gesture if needed
+                if collapsedHeight < expandedHeight {
+                    //Check if there is a scrollview to observer
+                    _contentView?.addGestureRecognizer(_panGesture)
+                }
                 
                 //Notify delegate that sheet did show
                 delegate?.widgetSheetDidShow?(self)
@@ -506,20 +514,32 @@ extension FKWidgetSheet: UIGestureRecognizerDelegate {
     
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         
+        /*
+         Need to figure out a way to check if the visible view controller has changed,
+         because collapsed height and other behaviours also need to be updated.
+         TODO: Will solve this later.
+         */
         //Check if there is a scrollview to observer
         if let scrollview = _content.scrollViewToObserve?(containedIn: self) {
             _scrollviewToObserve = scrollview
         }
         
-        if let scrollView = _scrollviewToObserve, let gesture = gestureRecognizer as? UIPanGestureRecognizer, let contentView = _contentView {
-            
-            let direction = _panDirection(gesture, view: contentView, possibleStateChange: _possibleStateChange(contentView.frame.minY))
-            
-            if ((_state == .expanded) && (scrollView.contentOffset.y + scrollView.contentInset.top == 0) && (direction == .down)) || (_state == .collapsed) {
-                scrollView.isScrollEnabled = false
-            } else {
-                scrollView.isScrollEnabled = true
-            }
+        guard let scrollView = _scrollviewToObserve, let contentView = _contentView else {
+            return false
+        }
+        
+        guard gestureRecognizer == _panGesture else {
+            return false
+        }
+        
+        
+        
+        let direction = _panDirection(_panGesture, view: contentView, possibleStateChange: _possibleStateChange(contentView.frame.minY))
+        
+        if ((_state == .expanded) && (scrollView.contentOffset.y + scrollView.contentInset.top == 0) && (direction == .down)) || (_state == .collapsed) {
+            scrollView.isScrollEnabled = false
+        } else {
+            scrollView.isScrollEnabled = true
         }
         
         return false
@@ -575,8 +595,9 @@ extension UIViewController: FKWidgetSheetContentProtocol {
         return UIScreen.main.bounds.height*0.5
     }
 
+    //Returning the same height as collapsed height by default
     open func expandedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat {
-        return UIScreen.main.bounds.height
+        return self.collapsedHeight(containedIn: widgetSheet)
     }
     
     open func scrollViewToObserve(containedIn widgetSheet: FKWidgetSheet) -> UIScrollView? {
@@ -599,11 +620,12 @@ extension UIViewController: FKWidgetSheetContentProtocol {
 extension UINavigationController {
     
     open override func collapsedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat {
-        return (self.visibleViewController?.collapsedHeight(containedIn: widgetSheet)) ?? UIScreen.main.bounds.height*0.5
+        return self.visibleViewController?.collapsedHeight(containedIn: widgetSheet) ?? UIScreen.main.bounds.height*0.5
     }
     
+    //Returning the same height as collapsed height by default
     open override func expandedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat {
-        return (self.visibleViewController?.expandedHeight(containedIn: widgetSheet)) ?? UIScreen.main.bounds.height
+        return self.visibleViewController?.expandedHeight(containedIn: widgetSheet) ?? self.collapsedHeight(containedIn: widgetSheet)
     }
     
     open override func scrollViewToObserve(containedIn widgetSheet: FKWidgetSheet) -> UIScrollView? {
