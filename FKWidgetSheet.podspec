@@ -44,7 +44,7 @@ s.homepage     = "git@github.com:rajatgupta26/FKWidgetSheet.git"
 #
 
 # s.license      = "MIT (example)"
-# s.license      = { :type => "MIT", :file => "FILE_LICENSE" }
+s.license      = { :type => "MIT", :file => "LICENSE" }
 
 
 # ――― Author Metadata  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -57,7 +57,7 @@ s.homepage     = "git@github.com:rajatgupta26/FKWidgetSheet.git"
 #  profile URL.
 #
 
-s.author             = { "rajatgupta26" => "rajatkumargupta89@flipkart.com" }
+s.author             = { "rajatgupta26" => "rajatkumargupta89@gmail.com" }
 
 # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 #
