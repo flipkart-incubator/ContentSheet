@@ -72,7 +72,7 @@ s.platform     = :ios, "8.0"
 #  Supports git, hg, bzr, svn and HTTP.
 #
 
-s.source       = { :git => "https://github.com/rajatgupta26/FKWidgetSheet.git", :branch => "master" }
+s.source       = { :git => "https://github.com/rajatgupta26/FKWidgetSheet.git", :tag => "0.1.0" }
 
 
 # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
