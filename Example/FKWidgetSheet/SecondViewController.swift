@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FKWidgetSheet
 
 class SecondViewController: UIViewController {
 
@@ -92,7 +93,7 @@ extension SecondViewController: UITableViewDataSource, UITableViewDelegate {
             case 1:
                 cell?.textLabel?.text = "Present Next"
             case 2:
-                cell?.textLabel?.text = "Present Next in NavigationController"
+                cell?.textLabel?.text = "Present NavigationController Next"
             default:
                 break
             }
@@ -100,7 +101,7 @@ extension SecondViewController: UITableViewDataSource, UITableViewDelegate {
             if indexPath.row%2 == 0 {
                 cell?.textLabel?.text = "Present"
             } else {
-                cell?.textLabel?.text = "Present in NavigationController"
+                cell?.textLabel?.text = "Present NavigationController"
             }
         }
         return cell!

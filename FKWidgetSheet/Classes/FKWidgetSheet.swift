@@ -548,37 +548,37 @@ extension UIViewController: FKWidgetSheetContentProtocol {
     }
     
     //MARK: FKWidgetSheetContentProtocol
-    public func widgetSheetWillAddContent(_ sheet: FKWidgetSheet) {
+    open func widgetSheetWillAddContent(_ sheet: FKWidgetSheet) {
         self.willMove(toParentViewController: sheet)
         sheet.addChildViewController(self)
         //        self.beginAppearanceTransition(true, animated: true)
     }
     
-    public func widgetSheetDidAddContent(_ sheet: FKWidgetSheet) {
+    open func widgetSheetDidAddContent(_ sheet: FKWidgetSheet) {
         //        self.endAppearanceTransition()
         self.didMove(toParentViewController: sheet)
     }
     
-    public func widgetSheetWillRemoveContent(_ sheet: FKWidgetSheet) {
+    open func widgetSheetWillRemoveContent(_ sheet: FKWidgetSheet) {
         self.willMove(toParentViewController: nil)
         self.removeFromParentViewController()
         //        self.beginAppearanceTransition(false, animated: true)
     }
     
-    public func widgetSheetDidRemoveContent(_ sheet: FKWidgetSheet) {
+    open func widgetSheetDidRemoveContent(_ sheet: FKWidgetSheet) {
         //        self.endAppearanceTransition()
         self.didMove(toParentViewController: nil)
     }
     
-    public func collapsedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat {
+    open func collapsedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat {
         return UIScreen.main.bounds.height*0.5
     }
 
-    public func expandedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat {
+    open func expandedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat {
         return UIScreen.main.bounds.height
     }
     
-    public func scrollViewToObserve(containedIn widgetSheet: FKWidgetSheet) -> UIScrollView? {
+    open func scrollViewToObserve(containedIn widgetSheet: FKWidgetSheet) -> UIScrollView? {
         return nil
     }
     
@@ -595,17 +595,17 @@ extension UIViewController: FKWidgetSheetContentProtocol {
 }
 
 
-public extension UINavigationController {
+extension UINavigationController {
     
-    public override func collapsedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat {
+    open override func collapsedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat {
         return (self.visibleViewController?.collapsedHeight(containedIn: widgetSheet)) ?? UIScreen.main.bounds.height*0.5
     }
     
-    public override func expandedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat {
+    open override func expandedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat {
         return (self.visibleViewController?.expandedHeight(containedIn: widgetSheet)) ?? UIScreen.main.bounds.height
     }
     
-    public override func scrollViewToObserve(containedIn widgetSheet: FKWidgetSheet) -> UIScrollView? {
+    open override func scrollViewToObserve(containedIn widgetSheet: FKWidgetSheet) -> UIScrollView? {
         return self.visibleViewController?.scrollViewToObserve(containedIn: widgetSheet)
     }
 }

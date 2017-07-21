@@ -1,0 +1,6 @@
+framework module FKWidgetSheet {
+  umbrella header "FKWidgetSheet-umbrella.h"
+
+  export *
+  module * { export * }
+}

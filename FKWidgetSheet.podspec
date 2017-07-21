@@ -78,7 +78,7 @@ s.source       = { :git => "git@github.com:rajatgupta26/FKWidgetSheet.git", :bra
 
 # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
-s.source_files  = "Classes", "Classes/**/*"
+s.source_files  = "FKWidgetSheet/Classes", "FKWidgetSheet/Classes/**/*.{h,m,swift}"
 s.exclude_files = "Classes/Exclude"
 
 

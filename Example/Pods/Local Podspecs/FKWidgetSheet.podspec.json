@@ -15,8 +15,8 @@
     "branch": "master"
   },
   "source_files": [
-    "Classes",
-    "Classes/**/*"
+    "FKWidgetSheet/Classes",
+    "FKWidgetSheet/Classes/**/*.{h,m,swift}"
   ],
   "exclude_files": "Classes/Exclude"
 }
