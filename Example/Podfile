@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'FKWidgetSheet_Example' do
+  pod 'FKWidgetSheet', :path => '../'
+
+  target 'FKWidgetSheet_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
