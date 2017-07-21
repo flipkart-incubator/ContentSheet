@@ -87,15 +87,30 @@ extension SecondViewController: UITableViewDataSource, UITableViewDelegate {
         let cell = table.dequeueReusableCell(withIdentifier: "id")
         
         if self.widgetSheet() != nil {
-            switch indexPath.row%3 {
-            case 0:
-                cell?.textLabel?.text = "Dismiss"
-            case 1:
-                cell?.textLabel?.text = "Present Next"
-            case 2:
-                cell?.textLabel?.text = "Present NavigationController Next"
-            default:
-                break
+            
+            if self.navigationController != nil {
+                switch indexPath.row%4 {
+                case 0:
+                    cell?.textLabel?.text = "Dismiss"
+                case 1:
+                    cell?.textLabel?.text = "Present Next"
+                case 2:
+                    cell?.textLabel?.text = "Present NavigationController Next"
+                default:
+                    cell?.textLabel?.text = "Push ViewController"
+                    break
+                }
+            } else {
+                switch indexPath.row%3 {
+                case 0:
+                    cell?.textLabel?.text = "Dismiss"
+                case 1:
+                    cell?.textLabel?.text = "Present Next"
+                case 2:
+                    cell?.textLabel?.text = "Present NavigationController Next"
+                default:
+                    break
+                }
             }
         } else {
             if indexPath.row%2 == 0 {
@@ -109,18 +124,37 @@ extension SecondViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if self.widgetSheet() != nil {
-            switch indexPath.row%3 {
-            case 0:
-                self.dismissWidgetSheet(animated: true)
-            case 1:
-                let secondVC = SecondViewController(nibName: nil, bundle: nil)
-                self.present(inWidgetSheet: secondVC, animated: true)
-            case 2:
-                let secondVC = SecondViewController(nibName: nil, bundle: nil)
-                let navcon = UINavigationController(rootViewController: secondVC)
-                self.present(inWidgetSheet: navcon, animated: true)
-            default:
-                break
+            
+            if self.navigationController != nil {
+                switch indexPath.row%4 {
+                case 0:
+                    self.dismissWidgetSheet(animated: true)
+                case 1:
+                    let secondVC = SecondViewController(nibName: nil, bundle: nil)
+                    self.present(inWidgetSheet: secondVC, animated: true)
+                case 2:
+                    let secondVC = SecondViewController(nibName: nil, bundle: nil)
+                    let navcon = UINavigationController(rootViewController: secondVC)
+                    self.present(inWidgetSheet: navcon, animated: true)
+                default:
+                    let secondVC = SecondViewController(nibName: nil, bundle: nil)
+                    self.navigationController?.pushViewController(secondVC, animated: true)
+                    break
+                }
+            } else {
+                switch indexPath.row%3 {
+                case 0:
+                    self.dismissWidgetSheet(animated: true)
+                case 1:
+                    let secondVC = SecondViewController(nibName: nil, bundle: nil)
+                    self.present(inWidgetSheet: secondVC, animated: true)
+                case 2:
+                    let secondVC = SecondViewController(nibName: nil, bundle: nil)
+                    let navcon = UINavigationController(rootViewController: secondVC)
+                    self.present(inWidgetSheet: navcon, animated: true)
+                default:
+                    break
+                }
             }
         } else {
             if indexPath.row%2 == 0 {

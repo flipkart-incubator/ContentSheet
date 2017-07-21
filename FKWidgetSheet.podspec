@@ -43,7 +43,6 @@ s.homepage     = "https://github.com/rajatgupta26/FKWidgetSheet"
 #  Popular ones are 'MIT', 'BSD' and 'Apache License, Version 2.0'.
 #
 
-# s.license      = "MIT (example)"
 s.license      = { :type => "MIT", :file => "LICENSE" }
 
 

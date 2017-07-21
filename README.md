@@ -5,6 +5,9 @@
 [![License](https://img.shields.io/cocoapods/l/FKWidgetSheet.svg?style=flat)](http://cocoapods.org/pods/FKWidgetSheet)
 [![Platform](https://img.shields.io/cocoapods/p/FKWidgetSheet.svg?style=flat)](http://cocoapods.org/pods/FKWidgetSheet)
 
+# Demo
+![Demo](/Example/Demo/WidgetSheetDemo.gif?raw=true)
+
 ## Example
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.

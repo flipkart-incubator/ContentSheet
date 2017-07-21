@@ -66,7 +66,7 @@ public class FKWidgetSheet: UIViewController {
     //MARK: Variables
     //Content controller object
     //Not necessarilly a view controller
-    private var _content: FKWidgetSheetContentProtocol
+    fileprivate var _content: FKWidgetSheetContentProtocol
     public var content: FKWidgetSheetContentProtocol {
         get {
             return _content
@@ -252,13 +252,9 @@ public class FKWidgetSheet: UIViewController {
                 _content.widgetSheetDidAddContent?(self)
                 
                 //Check if there is a scrollview to observer
-                if let scrollview = _content.scrollViewToObserve?(containedIn: self) {
-                    _scrollviewToObserve = scrollview
-                    
-                    let gesture = UIPanGestureRecognizer.init(target: self, action: #selector(handlePan(_:)))
-                    gesture.delegate = self
-                    _contentView?.addGestureRecognizer(gesture)
-                }
+                let gesture = UIPanGestureRecognizer.init(target: self, action: #selector(handlePan(_:)))
+                gesture.delegate = self
+                _contentView?.addGestureRecognizer(gesture)
                 
                 //Notify delegate that sheet did show
                 delegate?.widgetSheetDidShow?(self)
@@ -509,6 +505,11 @@ extension FKWidgetSheet {
 extension FKWidgetSheet: UIGestureRecognizerDelegate {
     
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        
+        //Check if there is a scrollview to observer
+        if let scrollview = _content.scrollViewToObserve?(containedIn: self) {
+            _scrollviewToObserve = scrollview
+        }
         
         if let scrollView = _scrollviewToObserve, let gesture = gestureRecognizer as? UIPanGestureRecognizer, let contentView = _contentView {
             
