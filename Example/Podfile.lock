@@ -1,0 +1,16 @@
+PODS:
+  - FKWidgetSheet (0.1.0)
+
+DEPENDENCIES:
+  - FKWidgetSheet (from `../`)
+
+EXTERNAL SOURCES:
+  FKWidgetSheet:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  FKWidgetSheet: 0a471bb4c3ca8e62101949a7342f85854271959e
+
+PODFILE CHECKSUM: b0c170055bbfa0472bee5822dd1755e59f8e1f32
+
+COCOAPODS: 1.2.1

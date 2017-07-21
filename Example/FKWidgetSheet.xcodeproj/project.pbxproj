@@ -14,6 +14,8 @@
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		7249D853CD9C31B8AE1BC594 /* Pods_FKWidgetSheet_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 772E3D5AEB364B2FE58EA884 /* Pods_FKWidgetSheet_Example.framework */; };
+		BBAE95AB1F221AE7006C44D9 /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBAE95AA1F221AE7006C44D9 /* SecondViewController.swift */; };
+		BBAE95AD1F221B29006C44D9 /* SecondViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = BBAE95AC1F221B29006C44D9 /* SecondViewController.xib */; };
 		FC844FD463F9D9B3A6317A51 /* Pods_FKWidgetSheet_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E5D194D4E297008C09787106 /* Pods_FKWidgetSheet_Tests.framework */; };
 /* End PBXBuildFile section */
 
@@ -29,7 +31,7 @@
 
 /* Begin PBXFileReference section */
 		0695959D6E1D8E1F6ECAED65 /* Pods-FKWidgetSheet_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FKWidgetSheet_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-FKWidgetSheet_Tests/Pods-FKWidgetSheet_Tests.release.xcconfig"; sourceTree = "<group>"; };
-		131154DA315097CEB0702B28 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		131154DA315097CEB0702B28 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		2058602362D269C6CD37279C /* Pods-FKWidgetSheet_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FKWidgetSheet_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FKWidgetSheet_Example/Pods-FKWidgetSheet_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		5BA11B8F8B7E83AF93983E8A /* Pods-FKWidgetSheet_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FKWidgetSheet_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-FKWidgetSheet_Example/Pods-FKWidgetSheet_Example.release.xcconfig"; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* FKWidgetSheet_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FKWidgetSheet_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -44,8 +46,10 @@
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
 		6C8803BF891474D04778DBBB /* Pods-FKWidgetSheet_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FKWidgetSheet_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FKWidgetSheet_Tests/Pods-FKWidgetSheet_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		772E3D5AEB364B2FE58EA884 /* Pods_FKWidgetSheet_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FKWidgetSheet_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		9B3C9620D0DAA95EABA53DC1 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = ../README.md; sourceTree = "<group>"; };
-		C6CF198692FFF596144A5FC8 /* FKWidgetSheet.podspec */ = {isa = PBXFileReference; includeInIndex = 1; name = FKWidgetSheet.podspec; path = ../FKWidgetSheet.podspec; sourceTree = "<group>"; };
+		9B3C9620D0DAA95EABA53DC1 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		BBAE95AA1F221AE7006C44D9 /* SecondViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecondViewController.swift; sourceTree = "<group>"; };
+		BBAE95AC1F221B29006C44D9 /* SecondViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SecondViewController.xib; sourceTree = "<group>"; };
+		C6CF198692FFF596144A5FC8 /* FKWidgetSheet.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = FKWidgetSheet.podspec; path = ../FKWidgetSheet.podspec; sourceTree = "<group>"; };
 		E5D194D4E297008C09787106 /* Pods_FKWidgetSheet_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FKWidgetSheet_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -104,6 +108,8 @@
 			children = (
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				607FACD71AFB9204008FA782 /* ViewController.swift */,
+				BBAE95AA1F221AE7006C44D9 /* SecondViewController.swift */,
+				BBAE95AC1F221B29006C44D9 /* SecondViewController.xib */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
@@ -248,6 +254,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BBAE95AD1F221B29006C44D9 /* SecondViewController.xib in Resources */,
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
@@ -361,6 +368,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BBAE95AB1F221AE7006C44D9 /* SecondViewController.swift in Sources */,
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 			);
