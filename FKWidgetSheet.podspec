@@ -32,7 +32,7 @@ callbacks for different events.
 Checkout the example in the code.
 DESC
 
-s.homepage     = "git@github.com:rajatgupta26/FKWidgetSheet.git"
+s.homepage     = "https://github.com/rajatgupta26/FKWidgetSheet"
 # s.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
 
 
@@ -73,7 +73,7 @@ s.platform     = :ios, "8.0"
 #  Supports git, hg, bzr, svn and HTTP.
 #
 
-s.source       = { :git => "git@github.com:rajatgupta26/FKWidgetSheet.git", :branch => "master" }
+s.source       = { :git => "https://github.com/rajatgupta26/FKWidgetSheet.git", :branch => "master" }
 
 
 # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
