@@ -11,6 +11,6 @@
 #endif
 
 
-FOUNDATION_EXPORT double FKWidgetSheetVersionNumber;
-FOUNDATION_EXPORT const unsigned char FKWidgetSheetVersionString[];
+FOUNDATION_EXPORT double ContentSheetVersionNumber;
+FOUNDATION_EXPORT const unsigned char ContentSheetVersionString[];
 

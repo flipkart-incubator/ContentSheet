@@ -1,7 +1,7 @@
 use_frameworks!
 
 target 'FKWidgetSheet_Example' do
-  pod 'FKWidgetSheet', :path => '../'
+  pod 'ContentSheet', :path => '../'
 
   target 'FKWidgetSheet_Tests' do
     inherit! :search_paths

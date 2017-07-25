@@ -1,6 +1,6 @@
 //
 //  ViewController.swift
-//  WidgetActionSheet
+//  ContentSheet
 //
 //  Created by Rajat Kumar Gupta on 19/07/17.
 //  Copyright © 2017 Rajat Kumar Gupta. All rights reserved.
@@ -47,8 +47,7 @@ class ViewController: UIViewController {
             let secondVC = SecondViewController(nibName: nil, bundle: nil)
             let navcon = UINavigationController(rootViewController: secondVC)
             
-            self.present(inWidgetSheet: navcon, animated: true)
-            //            a?.present(inWidgetSheet: secondVC, animated: true)
+            self.present(inContentSheet: navcon, animated: true)
         }
     }
 }
