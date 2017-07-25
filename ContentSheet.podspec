@@ -20,7 +20,7 @@ callbacks for different events.
 Checkout the example in the code.
 DESC
 
-s.homepage     = "https://github.com/rajatgupta26/ContentSheet"
+s.homepage     = "https://github.com/flipkart-incubator/ContentSheet"
 
 
 # ―――  Spec License  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -40,7 +40,7 @@ s.platform     = :ios, "8.0"
 
 # ――― Source Location ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
-s.source       = { :git => "https://github.com/rajatgupta26/ContentSheet.git", :tag => s.version.to_s }
+s.source       = { :git => "git@github.com:flipkart-incubator/ContentSheet.git", :tag => s.version.to_s }
 
 
 # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
