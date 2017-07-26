@@ -91,7 +91,7 @@ open func preferredStatusBarUpdateAnimation(contentSheet: ContentSheet) -> UISta
 }
 ```
 
-There convenience methods on UIViewController and UIView to get content sheet using self.contentSheet()
+There are convenience methods on UIViewController and UIView to get content sheet using 'self.contentSheet()'
 There is also a function in ContentSheet i.e. 'contentSheet(content:)' that can be used to get content sheet for any content.
 
 Also, take a look at 'presentCustomView(_:)' function in [ViewController.swift](/Example/ContentSheet/ViewController.swift) and [CustomContent.swift](/Example/ContentSheet/CustomContent.swift) to see how to present UIView or it's subclasses.
