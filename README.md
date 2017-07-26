@@ -26,7 +26,8 @@ pod "ContentSheet"
 ## Usage
 
 ContentSheet can present any object that conforms to 'ContentSheetContentProtocol'.
-UIViewController and UINavigationController extensions are provided out of the box.
+Example project and demo show how to present a UIView, UIViewController, UINavigationController or a UIView controller by some custom object/controller.
+UIView, UIViewController and UINavigationController extensions are provided out of the box.
 Take a look at them in '[ContentSheet.swift](/ContentSheet/Classes/ContentSheet.swift)' file to get an idea.
 
 
@@ -36,7 +37,20 @@ To present a view controller or a navigation controller from any view controller
 <presenter instance>.present(inContentSheet: <view controller instance>, animated: true)
 ```
 
-To dismiss the action sheet from content view controller
+To dismiss the content sheet from content view controller
+
+```swift
+self.dismissContentSheet(animated: true)
+```
+
+To present a view in content sheet
+
+```swift
+let contentSheet = ContentSheet(content: <UIView instance>)
+<presenter instance>.present(contentSheet, animated: true, completion: completion)
+```
+
+To dismiss content sheet from content view
 
 ```swift
 self.dismissContentSheet(animated: true)
@@ -62,7 +76,28 @@ open func expandedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
 }
 ```
 
-Use these to customize behaviour
+Control status bar appearance using 
+```swift
+open func prefersStatusBarHidden(contentSheet: ContentSheet) -> Bool {
+    return <should hide?>
+}
+
+open func preferredStatusBarStyle(contentSheet: ContentSheet) -> UIStatusBarStyle {
+    return <style>
+}
+
+open func preferredStatusBarUpdateAnimation(contentSheet: ContentSheet) -> UIStatusBarAnimation {
+    return <animation>
+}
+```
+
+There convenience methods on UIViewController and UIView to get content sheet using self.contentSheet()
+There is also a function in ContentSheet i.e. 'contentSheet(content:)' that can be used to get content sheet for any content.
+
+Also, take a look at 'presentCustomView(_:)' function in [ViewController.swift](/Example/ContentSheet/ViewController.swift) and [CustomContent.swift](/Example/ContentSheet/CustomContent.swift) to see how to present UIView or it's subclasses.
+
+
+Use these properties of content sheet to customize behaviour
 
 ```swift
 public var blurBackground: Bool = true

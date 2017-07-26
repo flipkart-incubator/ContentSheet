@@ -79,12 +79,5 @@ class ViewController: UIViewController {
         let contentSheet = ContentSheet(content: content)
         self.present(contentSheet, animated: true, completion: nil)
     }
-
-    
-    @IBAction func presentCutomView() {
-        let customView = CustomView.customView()
-        let contentSheet = ContentSheet(content: customView)
-        self.present(contentSheet, animated: true, completion: nil)
-    }
 }
 
