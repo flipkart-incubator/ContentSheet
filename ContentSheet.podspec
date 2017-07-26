@@ -40,7 +40,7 @@ s.platform     = :ios, "8.0"
 
 # ――― Source Location ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
-s.source       = { :git => "git@github.com:flipkart-incubator/ContentSheet.git", :tag => s.version.to_s }
+s.source       = { :git => "https://github.com/flipkart-incubator/ContentSheet.git", :tag => s.version.to_s }
 
 
 # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
