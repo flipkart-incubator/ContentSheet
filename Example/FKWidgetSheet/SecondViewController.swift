@@ -160,6 +160,11 @@ extension SecondViewController: UITableViewDataSource, UITableViewDelegate {
             }
         }
     }
+    
+    
+    override func preferredStatusBarStyle(contentSheet: ContentSheet) -> UIStatusBarStyle {
+        return .lightContent
+    }
 }
 
 

@@ -35,17 +35,23 @@ fileprivate let TotalDuration: Double = 0.5
     //View to be set as content
     var view: UIView! {get}
     
+    //Callbacks
     @objc optional func contentSheetWillAddContent(_ sheet: ContentSheet)
     @objc optional func contentSheetDidAddContent(_ sheet: ContentSheet)
     @objc optional func contentSheetWillRemoveContent(_ sheet: ContentSheet)
     @objc optional func contentSheetDidRemoveContent(_ sheet: ContentSheet)
     
+    //Params
     @objc optional func collapsedHeight(containedIn contentSheet: ContentSheet) -> CGFloat
     @objc optional func expandedHeight(containedIn contentSheet: ContentSheet) -> CGFloat
     
     @objc optional func scrollViewToObserve(containedIn contentSheet: ContentSheet) -> UIScrollView?
+    
+    //Status bar
+    @objc optional func prefersStatusBarHidden(contentSheet: ContentSheet) -> Bool
+    @objc optional func preferredStatusBarStyle(contentSheet: ContentSheet) -> UIStatusBarStyle
+    @objc optional func preferredStatusBarUpdateAnimation(contentSheet: ContentSheet) -> UIStatusBarAnimation
 }
-
 
 
 @objc public enum ContentSheetState: UInt {
@@ -258,11 +264,8 @@ public class ContentSheet: UIViewController {
                 // e.g. in case of view controllers, they might wanna end the appearance transitions
                 _content.contentSheetDidAddContent?(self)
                 
-                //Only add pan gesture if needed
-                if collapsedHeight < expandedHeight {
-                    //Check if there is a scrollview to observer
-                    _contentView?.addGestureRecognizer(_panGesture)
-                }
+                //Check if there is a scrollview to observer
+                _contentView?.addGestureRecognizer(_panGesture)
                 
                 //Notify delegate that sheet did show
                 delegate?.contentSheetDidShow?(self)
@@ -323,12 +326,33 @@ public class ContentSheet: UIViewController {
     }
     
     
+    //Overrides
+    //Transition
     public override var transitioningDelegate: UIViewControllerTransitioningDelegate? {
         get {
             return _transitionController
         }
         set {
             fatalError("Attempt to set transition delegate of content sheet, which is a read only property.")
+        }
+    }
+    
+    //Status bar
+    public override var prefersStatusBarHidden: Bool {
+        get {
+            return self.content.prefersStatusBarHidden?(contentSheet: self) ?? false
+        }
+    }
+    
+    public override var preferredStatusBarStyle: UIStatusBarStyle {
+        get {
+            return self.content.preferredStatusBarStyle?(contentSheet: self) ?? .default
+        }
+    }
+    
+    public override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+        get {
+            return self.content.preferredStatusBarUpdateAnimation?(contentSheet: self) ?? .fade
         }
     }
 }
@@ -450,6 +474,9 @@ extension ContentSheet {
     }
     
     @inline(__always) fileprivate func _possibleStateChange(_ progress: CGFloat) -> ContentSheetState {
+        if expandedHeight <= collapsedHeight {
+            return .minimised
+        }
         let possibleState: ContentSheetState
         if _state == .expanded {
             possibleState = .collapsed
@@ -548,6 +575,19 @@ extension ContentSheet: UIGestureRecognizerDelegate {
 
 
 
+//Convenience
+extension ContentSheet {
+    public static func contentSheet(content: ContentSheetContentProtocol) -> ContentSheet? {
+        var responder: UIResponder? = content.view
+        while responder != nil {
+            if responder is ContentSheet {
+                return responder as? ContentSheet
+            }
+            responder = responder?.next
+        }
+        return nil
+    }
+}
 
 
 
@@ -558,14 +598,7 @@ extension UIViewController: ContentSheetContentProtocol {
     
     //MARK: Utility
     public func contentSheet() -> ContentSheet? {
-        var viewController: UIResponder? = self
-        while viewController != nil {
-            if viewController is ContentSheet {
-                return viewController as? ContentSheet
-            }
-            viewController = viewController?.next
-        }
-        return nil
+        return ContentSheet.contentSheet(content: self)
     }
     
     //MARK: ContentSheetContentProtocol
@@ -595,6 +628,18 @@ extension UIViewController: ContentSheetContentProtocol {
         return UIScreen.main.bounds.height*0.5
     }
 
+    open func prefersStatusBarHidden(contentSheet: ContentSheet) -> Bool {
+        return false
+    }
+    
+    open func preferredStatusBarStyle(contentSheet: ContentSheet) -> UIStatusBarStyle {
+        return .default
+    }
+    
+    open func preferredStatusBarUpdateAnimation(contentSheet: ContentSheet) -> UIStatusBarAnimation {
+        return .fade
+    }
+    
     //Returning the same height as collapsed height by default
     open func expandedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
         return self.collapsedHeight(containedIn: contentSheet)
@@ -605,9 +650,9 @@ extension UIViewController: ContentSheetContentProtocol {
     }
     
     //MARK: Presentation
-    open func present(inContentSheet viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Swift.Void)? = nil) {
+    open func present(inContentSheet content: ContentSheetContentProtocol, animated flag: Bool, completion: (() -> Swift.Void)? = nil) {
         
-        let contentSheet = ContentSheet(content: viewControllerToPresent)
+        let contentSheet = ContentSheet(content: content)
         self.present(contentSheet, animated: true, completion: completion)
     }
     
@@ -630,6 +675,38 @@ extension UINavigationController {
     
     open override func scrollViewToObserve(containedIn contentSheet: ContentSheet) -> UIScrollView? {
         return self.visibleViewController?.scrollViewToObserve(containedIn: contentSheet)
+    }
+    
+    open override func prefersStatusBarHidden(contentSheet: ContentSheet) -> Bool {
+        return self.visibleViewController?.prefersStatusBarHidden(contentSheet: contentSheet) ?? false
+    }
+    
+    open override func preferredStatusBarStyle(contentSheet: ContentSheet) -> UIStatusBarStyle {
+        return self.visibleViewController?.preferredStatusBarStyle(contentSheet: contentSheet) ?? .default
+    }
+    
+    open override func preferredStatusBarUpdateAnimation(contentSheet: ContentSheet) -> UIStatusBarAnimation {
+        return self.visibleViewController?.preferredStatusBarUpdateAnimation(contentSheet: contentSheet) ?? .fade
+    }
+}
+
+
+extension UIView: ContentSheetContentProtocol {
+    
+    open var view: UIView! {
+        get {
+            return self
+        }
+    }
+    
+    //MARK: Presentation
+    open func dismissContentSheet(animated flag: Bool, completion: (() -> Swift.Void)? = nil) {
+        self.contentSheet()?.dismiss(animated: true, completion: completion)
+    }
+    
+    //MARK: Utility
+    public func contentSheet() -> ContentSheet? {
+        return ContentSheet.contentSheet(content: self)
     }
 }
 
