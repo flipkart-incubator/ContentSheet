@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -24,19 +25,69 @@
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="1" translatesAutoresizingMaskIntoConstraints="NO" id="k1P-NO-h0n">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                             </imageView>
+                            <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B64-rD-fi2">
+                                <rect key="frame" x="16" y="617" width="343" height="30"/>
+                                <color key="backgroundColor" red="0.43921568630000002" green="0.2274509804" blue="0.62745098040000002" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="vH9-UC-vTo"/>
+                                </constraints>
+                                <state key="normal" title="Present View via Controller Object">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="presentCustomView:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="KlU-0S-obe"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FWL-w2-uUm">
+                                <rect key="frame" x="16" y="579" width="343" height="30"/>
+                                <color key="backgroundColor" red="0.43921568630000002" green="0.2274509804" blue="0.62745098040000002" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="Aiw-cs-0r2"/>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="30" id="LE5-np-SzI"/>
+                                </constraints>
+                                <state key="normal" title="Present Custom View">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="presentCustomView:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="Ka9-gS-NXH"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6am-rT-obe">
+                                <rect key="frame" x="16" y="541" width="343" height="30"/>
+                                <color key="backgroundColor" red="0.43921568630000002" green="0.2274509804" blue="0.62745098040000002" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="30" id="XCl-7v-d4y"/>
+                                    <constraint firstAttribute="height" constant="30" id="os4-la-nRR"/>
+                                </constraints>
+                                <state key="normal" title="Present UIView">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="presentCustomView:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="KAe-X3-Vwr"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="B64-rD-fi2" firstAttribute="trailing" secondItem="kh9-bI-dsS" secondAttribute="trailingMargin" id="9bm-9z-bcb"/>
+                            <constraint firstItem="B64-rD-fi2" firstAttribute="top" secondItem="FWL-w2-uUm" secondAttribute="bottom" constant="8" id="Daq-Ov-7q9"/>
+                            <constraint firstItem="6am-rT-obe" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" id="Je2-Bw-LVe"/>
+                            <constraint firstItem="6am-rT-obe" firstAttribute="trailing" secondItem="kh9-bI-dsS" secondAttribute="trailingMargin" id="NSy-hp-SDY"/>
                             <constraint firstItem="k1P-NO-h0n" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" id="dE5-J8-8ti"/>
+                            <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="B64-rD-fi2" secondAttribute="bottom" constant="20" id="duf-wP-TvL"/>
                             <constraint firstAttribute="trailing" secondItem="k1P-NO-h0n" secondAttribute="trailing" id="hX3-bL-hJP"/>
                             <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="k1P-NO-h0n" secondAttribute="bottom" id="vY9-yN-N31"/>
                             <constraint firstItem="k1P-NO-h0n" firstAttribute="top" secondItem="kh9-bI-dsS" secondAttribute="top" id="x5W-Zi-KgS"/>
+                            <constraint firstItem="FWL-w2-uUm" firstAttribute="trailing" secondItem="kh9-bI-dsS" secondAttribute="trailingMargin" id="xX9-V5-rda"/>
+                            <constraint firstItem="FWL-w2-uUm" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" id="xhd-7t-Czk"/>
+                            <constraint firstItem="B64-rD-fi2" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" id="ysj-Qk-OSe"/>
+                            <constraint firstItem="FWL-w2-uUm" firstAttribute="top" secondItem="6am-rT-obe" secondAttribute="bottom" constant="8" id="znz-au-cgM"/>
                         </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-120.8" y="31.03448275862069"/>
+            <point key="canvasLocation" x="-262" y="44"/>
         </scene>
     </scenes>
     <resources>

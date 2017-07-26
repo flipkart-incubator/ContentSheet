@@ -1,9 +1,9 @@
-# FKWidgetSheet
+# ContentSheet
 
-[![CI Status](http://img.shields.io/travis/rajatgupta26/FKWidgetSheet.svg?style=flat)](https://travis-ci.org/rajatgupta26/FKWidgetSheet)
-[![Version](https://img.shields.io/cocoapods/v/FKWidgetSheet.svg?style=flat)](http://cocoapods.org/pods/FKWidgetSheet)
-[![License](https://img.shields.io/cocoapods/l/FKWidgetSheet.svg?style=flat)](http://cocoapods.org/pods/FKWidgetSheet)
-[![Platform](https://img.shields.io/cocoapods/p/FKWidgetSheet.svg?style=flat)](http://cocoapods.org/pods/FKWidgetSheet)
+<!--[![CI Status](http://img.shields.io/travis/rajatgupta26/ContentSheet.svg?style=flat)](https://travis-ci.org/rajatgupta26/ContentSheet) -->
+[![Version](https://img.shields.io/cocoapods/v/ContentSheet.svg?style=flat)](http://cocoapods.org/pods/ContentSheet)
+[![License](https://img.shields.io/cocoapods/l/ContentSheet.svg?style=flat)](http://cocoapods.org/pods/ContentSheet)
+[![Platform](https://img.shields.io/cocoapods/p/ContentSheet.svg?style=flat)](http://cocoapods.org/pods/ContentSheet)
 
 # Demo
 ![Demo](/Example/Demo/WidgetSheetDemo.gif?raw=true)
@@ -16,36 +16,50 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 
 ## Installation
 
-FKWidgetSheet is available through [CocoaPods](http://cocoapods.org). To install
+ContentSheet is available through [CocoaPods](http://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod "FKWidgetSheet"
+pod "ContentSheet"
 ```
 
 ## Usage
 
-FKWidgetSheet can present any object that conforms to 'FKWidgetSheetContentProtocol'.
-UIViewController and UINavigationController extensions are provided out of the box.
-Take a look at them in '[FKWidgetSheet.swift](/FKWidgetSheet/Classes/FKWidgetSheet.swift)' file to get an idea.
+ContentSheet can present any object that conforms to 'ContentSheetContentProtocol'.
+Example project and demo show how to present a UIView, UIViewController, UINavigationController or a UIView controller by some custom object/controller.
+UIView, UIViewController and UINavigationController extensions are provided out of the box.
+Take a look at them in '[ContentSheet.swift](/ContentSheet/Classes/ContentSheet.swift)' file to get an idea.
 
 
 To present a view controller or a navigation controller from any view controller
 
 ```swift
-<presenter instance>.present(inWidgetSheet: <view controller instance>, animated: true)
+<presenter instance>.present(inContentSheet: <view controller instance>, animated: true)
 ```
 
-To dismiss the action sheet from content view controller
+To dismiss the content sheet from content view controller
 
 ```swift
-self.dismissWidgetSheet(animated: true)
+self.dismissContentSheet(animated: true)
+```
+
+To present a view in content sheet
+
+```swift
+let contentSheet = ContentSheet(content: <UIView instance>)
+<presenter instance>.present(contentSheet, animated: true, completion: completion)
+```
+
+To dismiss content sheet from content view
+
+```swift
+self.dismissContentSheet(animated: true)
 ```
 
 To provide a scroll view to observe from a view controller
 
 ```swift
-override func scrollViewToObserve(containedIn widgetSheet: FKWidgetSheet) -> UIScrollView? {
+override func scrollViewToObserve(containedIn contentSheet: ContentSheet) -> UIScrollView? {
     return <scrollview instance>
 }
 ```
@@ -53,16 +67,37 @@ override func scrollViewToObserve(containedIn widgetSheet: FKWidgetSheet) -> UIS
 Control collapsed and expanded heights using
 
 ```swift
-open func collapsedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat {
+open func collapsedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
     return <height>
 }
 
-open func expandedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat {
+open func expandedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
     return <height>
 }
 ```
 
-Use these to customize behaviour
+Control status bar appearance using 
+```swift
+open func prefersStatusBarHidden(contentSheet: ContentSheet) -> Bool {
+    return <should hide?>
+}
+
+open func preferredStatusBarStyle(contentSheet: ContentSheet) -> UIStatusBarStyle {
+    return <style>
+}
+
+open func preferredStatusBarUpdateAnimation(contentSheet: ContentSheet) -> UIStatusBarAnimation {
+    return <animation>
+}
+```
+
+There are convenience methods on UIViewController and UIView to get content sheet using 'self.contentSheet()'
+There is also a function in ContentSheet i.e. 'contentSheet(content:)' that can be used to get content sheet for any content.
+
+Also, take a look at 'presentCustomView(_:)' function in [ViewController.swift](/Example/ContentSheet/ViewController.swift) and [CustomContent.swift](/Example/ContentSheet/CustomContent.swift) to see how to present UIView or it's subclasses.
+
+
+Use these properties of content sheet to customize behaviour
 
 ```swift
 public var blurBackground: Bool = true
@@ -72,29 +107,29 @@ public var backgroundImage: UIImage?
 public var backgroundView: UIView? 
 ```
 
-### FKWidgetSheetDelegate
+### ContentSheetDelegate
 
-Use delegate to get callbacks. Delegate conforms to 'FKWidgetSheetDelegate'.
+Use delegate to get callbacks. Delegate conforms to 'ContentSheetDelegate'.
 
 These callbacks are sent when sheet is shown or hidden.
 
 ```swift
-@objc optional func widgetSheetWillShow(_ sheet: FKWidgetSheet)
-@objc optional func widgetSheetDidShow(_ sheet: FKWidgetSheet)
-@objc optional func widgetSheetWillHide(_ sheet: FKWidgetSheet)
-@objc optional func widgetSheetDidHide(_ sheet: FKWidgetSheet)
+@objc optional func contentSheetWillShow(_ sheet: ContentSheet)
+@objc optional func contentSheetDidShow(_ sheet: ContentSheet)
+@objc optional func contentSheetWillHide(_ sheet: ContentSheet)
+@objc optional func contentSheetDidHide(_ sheet: ContentSheet)
 ```
 
-These callbacks are given when widget sheet view appears or disappears.
+These callbacks are given when content sheet view appears or disappears.
 Use them if you'd wanna update some thing in content on appearance transitions.
 
 ```swift
-@objc optional func widgetSheetWillAppear(_ sheet: FKWidgetSheet)
-@objc optional func widgetSheetDidAppear(_ sheet: FKWidgetSheet)
-@objc optional func widgetSheetWillDisappear(_ sheet: FKWidgetSheet)
-@objc optional func widgetSheetDidDisappear(_ sheet: FKWidgetSheet)
+@objc optional func contentSheetWillAppear(_ sheet: ContentSheet)
+@objc optional func contentSheetDidAppear(_ sheet: ContentSheet)
+@objc optional func contentSheetWillDisappear(_ sheet: ContentSheet)
+@objc optional func contentSheetDidDisappear(_ sheet: ContentSheet)
 ```
-### FKWidgetSheetContentProtocol
+### ContentSheetContentProtocol
 
 Return a content view using this from content controller
 
@@ -102,35 +137,35 @@ Return a content view using this from content controller
 var view: UIView! {get}
 ```
 
-Prepare for content view lifecycle events using these (Checkout UIViewController extension in [FKWidgetSheet.swift](/FKWidgetSheet/Classes/FKWidgetSheet.swift))
+Prepare for content view lifecycle events using these (Checkout UIViewController extension in [ContentSheet.swift](/ContentSheet/Classes/ContentSheet.swift))
 
 ```swift
-@objc optional func widgetSheetWillAddContent(_ sheet: FKWidgetSheet)
-@objc optional func widgetSheetDidAddContent(_ sheet: FKWidgetSheet)
-@objc optional func widgetSheetWillRemoveContent(_ sheet: FKWidgetSheet)
-@objc optional func widgetSheetDidRemoveContent(_ sheet: FKWidgetSheet)
+@objc optional func contentSheetWillAddContent(_ sheet: ContentSheet)
+@objc optional func contentSheetDidAddContent(_ sheet: ContentSheet)
+@objc optional func contentSheetWillRemoveContent(_ sheet: ContentSheet)
+@objc optional func contentSheetDidRemoveContent(_ sheet: ContentSheet)
 ```
 
-Configure behaviour using these (Checkout [SecondViewController.swift](/Example/FKWidgetSheet/SecondViewController.swift) and UIViewController extension in [FKWidgetSheet.swift](/FKWidgetSheet/Classes/FKWidgetSheet.swift))
+Configure behaviour using these (Checkout [SecondViewController.swift](/Example/ContentSheet/SecondViewController.swift) and UIViewController extension in [ContentSheet.swift](/ContentSheet/Classes/ContentSheet.swift))
 
 ```swift
-@objc optional func collapsedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat
-@objc optional func expandedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat
+@objc optional func collapsedHeight(containedIn contentSheet: ContentSheet) -> CGFloat
+@objc optional func expandedHeight(containedIn contentSheet: ContentSheet) -> CGFloat
 
-@objc optional func scrollViewToObserve(containedIn widgetSheet: FKWidgetSheet) -> UIScrollView?
+@objc optional func scrollViewToObserve(containedIn contentSheet: ContentSheet) -> UIScrollView?
 ```
 
 To know content and state use these readonly vars
 ```swift
-public var content: FKWidgetSheetContentProtocol
+public var content: ContentSheetContentProtocol
 public var state
 ```
 
 Example of presenting any content
 
 ```swift
-let widgetSheet = FKWidgetSheet(content: <FKWidgetSheetContentProtocol instance>)
-<presenter instance>.present(widgetSheet, animated: true, completion: completion)
+let contentSheet = ContentSheet(content: <ContentSheetContentProtocol instance>)
+<presenter instance>.present(contentSheet, animated: true, completion: completion)
 ```
 
 
@@ -141,4 +176,5 @@ rajatgupta26, rajatkumargupta89@gmail.com
 
 ## License
 
-FKWidgetSheet is available under the MIT license. See the LICENSE file for more info.
+ContentSheet is available under the MIT license. See the LICENSE file for more info.
+

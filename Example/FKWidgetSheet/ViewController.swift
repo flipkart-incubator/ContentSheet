@@ -1,12 +1,14 @@
 //
 //  ViewController.swift
-//  WidgetActionSheet
+//  ContentSheet
 //
 //  Created by Rajat Kumar Gupta on 19/07/17.
 //  Copyright © 2017 Rajat Kumar Gupta. All rights reserved.
 //
 
 import UIKit
+import ContentSheet
+
 
 class ViewController: UIViewController {
     
@@ -32,7 +34,9 @@ class ViewController: UIViewController {
         a?.willMove(toParentViewController: self)
         a?.view.backgroundColor = UIColor.yellow
         self.addChildViewController(a!)
-        a?.view.frame = self.view.bounds.insetBy(dx: 25, dy: 100)
+        var frame = self.view.bounds.insetBy(dx: 25, dy: 100)
+        frame.origin.y -= 50
+        a?.view.frame = frame
         self.view.addSubview(a!.view)
         a?.didMove(toParentViewController: self)
         
@@ -47,9 +51,33 @@ class ViewController: UIViewController {
             let secondVC = SecondViewController(nibName: nil, bundle: nil)
             let navcon = UINavigationController(rootViewController: secondVC)
             
-            self.present(inWidgetSheet: navcon, animated: true)
-            //            a?.present(inWidgetSheet: secondVC, animated: true)
+            self.present(inContentSheet: navcon, animated: true)
         }
+    }
+    
+    @IBAction func presentCustomView(_ sender: Any) {
+        
+        let content: ContentSheetContentProtocol
+        
+        switch (sender as! UIButton).tag {
+        case 0:
+            let view = UIView()
+            view.backgroundColor = UIColor.cyan
+            view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            content = view
+            break
+        case 1:
+            let customView = CustomView.customView()
+            content = customView
+            break
+        default:
+            let contentController = CustomObject()
+            content = contentController
+            break
+        }
+        
+        let contentSheet = ContentSheet(content: content)
+        self.present(contentSheet, animated: true, completion: nil)
     }
 }
 

@@ -1,5 +1,5 @@
 //
-//  FKWidgetActionSheet.swift
+//  ContentSheet.swift
 //  Flipkart
 //
 //  Created by Rajat Kumar Gupta on 19/07/17.
@@ -16,39 +16,45 @@ fileprivate let TotalDuration: Double = 0.5
 
 
 
-@objc public protocol FKWidgetSheetDelegate {
+@objc public protocol ContentSheetDelegate {
     
-    @objc optional func widgetSheetWillAppear(_ sheet: FKWidgetSheet)
-    @objc optional func widgetSheetDidAppear(_ sheet: FKWidgetSheet)
-    @objc optional func widgetSheetWillDisappear(_ sheet: FKWidgetSheet)
-    @objc optional func widgetSheetDidDisappear(_ sheet: FKWidgetSheet)
+    @objc optional func contentSheetWillAppear(_ sheet: ContentSheet)
+    @objc optional func contentSheetDidAppear(_ sheet: ContentSheet)
+    @objc optional func contentSheetWillDisappear(_ sheet: ContentSheet)
+    @objc optional func contentSheetDidDisappear(_ sheet: ContentSheet)
     
-    @objc optional func widgetSheetWillShow(_ sheet: FKWidgetSheet)
-    @objc optional func widgetSheetDidShow(_ sheet: FKWidgetSheet)
-    @objc optional func widgetSheetWillHide(_ sheet: FKWidgetSheet)
-    @objc optional func widgetSheetDidHide(_ sheet: FKWidgetSheet)
+    @objc optional func contentSheetWillShow(_ sheet: ContentSheet)
+    @objc optional func contentSheetDidShow(_ sheet: ContentSheet)
+    @objc optional func contentSheetWillHide(_ sheet: ContentSheet)
+    @objc optional func contentSheetDidHide(_ sheet: ContentSheet)
 }
 
 
-@objc public protocol FKWidgetSheetContentProtocol {
+@objc public protocol ContentSheetContentProtocol {
     
     //View to be set as content
     var view: UIView! {get}
     
-    @objc optional func widgetSheetWillAddContent(_ sheet: FKWidgetSheet)
-    @objc optional func widgetSheetDidAddContent(_ sheet: FKWidgetSheet)
-    @objc optional func widgetSheetWillRemoveContent(_ sheet: FKWidgetSheet)
-    @objc optional func widgetSheetDidRemoveContent(_ sheet: FKWidgetSheet)
+    //Callbacks
+    @objc optional func contentSheetWillAddContent(_ sheet: ContentSheet)
+    @objc optional func contentSheetDidAddContent(_ sheet: ContentSheet)
+    @objc optional func contentSheetWillRemoveContent(_ sheet: ContentSheet)
+    @objc optional func contentSheetDidRemoveContent(_ sheet: ContentSheet)
     
-    @objc optional func collapsedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat
-    @objc optional func expandedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat
+    //Params
+    @objc optional func collapsedHeight(containedIn contentSheet: ContentSheet) -> CGFloat
+    @objc optional func expandedHeight(containedIn contentSheet: ContentSheet) -> CGFloat
     
-    @objc optional func scrollViewToObserve(containedIn widgetSheet: FKWidgetSheet) -> UIScrollView?
+    @objc optional func scrollViewToObserve(containedIn contentSheet: ContentSheet) -> UIScrollView?
+    
+    //Status bar
+    @objc optional func prefersStatusBarHidden(contentSheet: ContentSheet) -> Bool
+    @objc optional func preferredStatusBarStyle(contentSheet: ContentSheet) -> UIStatusBarStyle
+    @objc optional func preferredStatusBarUpdateAnimation(contentSheet: ContentSheet) -> UIStatusBarAnimation
 }
 
 
-
-@objc public enum FKWidgetSheetState: UInt {
+@objc public enum ContentSheetState: UInt {
     case minimised
     case collapsed
     case expanded
@@ -61,13 +67,13 @@ fileprivate enum PanDirection {
 
 
 
-public class FKWidgetSheet: UIViewController {
+public class ContentSheet: UIViewController {
     
     //MARK: Variables
     //Content controller object
     //Not necessarilly a view controller
-    fileprivate var _content: FKWidgetSheetContentProtocol
-    public var content: FKWidgetSheetContentProtocol {
+    fileprivate var _content: ContentSheetContentProtocol
+    public var content: ContentSheetContentProtocol {
         get {
             return _content
         }
@@ -154,8 +160,8 @@ public class FKWidgetSheet: UIViewController {
     }
     
     //State
-    fileprivate var _state: FKWidgetSheetState = .minimised
-    public var state: FKWidgetSheetState {
+    fileprivate var _state: ContentSheetState = .minimised
+    public var state: ContentSheetState {
         get {
             return _state
         }
@@ -163,13 +169,13 @@ public class FKWidgetSheet: UIViewController {
 
     //Transition
     fileprivate lazy var _transitionController: UIViewControllerTransitioningDelegate = {
-        let controller = FKWidgetSheetTransitionDelegate()
+        let controller = ContentSheetTransitionDelegate()
         controller.duration = TotalDuration
         return controller
     } ()
 
     //Delegate
-    public weak var delegate: FKWidgetSheetDelegate?
+    public weak var delegate: ContentSheetDelegate?
     
     //Gesture
     fileprivate lazy var _panGesture: UIPanGestureRecognizer = {
@@ -187,7 +193,7 @@ public class FKWidgetSheet: UIViewController {
     
     // required initializer
     // content controller is non-optional
-    public required init(content: FKWidgetSheetContentProtocol) {
+    public required init(content: ContentSheetContentProtocol) {
         _content = content
         super.init(nibName: nil, bundle: nil)
     }
@@ -226,7 +232,7 @@ public class FKWidgetSheet: UIViewController {
                 
                 //Content controller should use this do any preps before content view is added
                 // e.g. in case of view controllers, they might wanna prepare for appearance transitions
-                _content.widgetSheetWillAddContent?(self)
+                _content.contentSheetWillAddContent?(self)
                 self.view.addSubview(contentView)
                 
                 //Do not expand if no expanded height
@@ -239,12 +245,12 @@ public class FKWidgetSheet: UIViewController {
                 }, completion: nil)
                 
                 //Notify delegate that sheet will show
-                delegate?.widgetSheetWillShow?(self)
+                delegate?.contentSheetWillShow?(self)
             }
         }
         
         //Notify delegate that view will appear
-        delegate?.widgetSheetWillAppear?(self)
+        delegate?.contentSheetWillAppear?(self)
     }
     
     override public func viewDidAppear(_ animated: Bool) {
@@ -256,21 +262,18 @@ public class FKWidgetSheet: UIViewController {
             if _contentView != nil {
                 //Content controller should use this do any preps after content view is added
                 // e.g. in case of view controllers, they might wanna end the appearance transitions
-                _content.widgetSheetDidAddContent?(self)
+                _content.contentSheetDidAddContent?(self)
                 
-                //Only add pan gesture if needed
-                if collapsedHeight < expandedHeight {
-                    //Check if there is a scrollview to observer
-                    _contentView?.addGestureRecognizer(_panGesture)
-                }
+                //Check if there is a scrollview to observer
+                _contentView?.addGestureRecognizer(_panGesture)
                 
                 //Notify delegate that sheet did show
-                delegate?.widgetSheetDidShow?(self)
+                delegate?.contentSheetDidShow?(self)
             }
         }
         
         //Notify delegate that view did appear
-        delegate?.widgetSheetDidAppear?(self)
+        delegate?.contentSheetDidAppear?(self)
     }
     
     override public func viewWillDisappear(_ animated: Bool) {
@@ -281,7 +284,7 @@ public class FKWidgetSheet: UIViewController {
             if let contentView = _contentView {
                 //Content controller should use this do any preps before content view is removed
                 // e.g. in case of view controllers, they might wanna prepare for appearance transitions
-                _content.widgetSheetWillRemoveContent?(self)
+                _content.contentSheetWillRemoveContent?(self)
                 
                 //Animate content
                 var frame = contentView.frame
@@ -291,12 +294,12 @@ public class FKWidgetSheet: UIViewController {
                 }, completion: nil)
                 
                 //Notify delegate that sheet will hide
-                delegate?.widgetSheetWillHide?(self)
+                delegate?.contentSheetWillHide?(self)
             }
         }
         
         //Notify delegate view will disappear
-        delegate?.widgetSheetWillDisappear?(self)
+        delegate?.contentSheetWillDisappear?(self)
     }
     
     override public func viewDidDisappear(_ animated: Bool) {
@@ -311,37 +314,58 @@ public class FKWidgetSheet: UIViewController {
                 contentView.removeFromSuperview()
                 //Content controller should use this do any preps after content view is removed
                 // e.g. in case of view controllers, they might wanna end the appearance transitions
-                _content.widgetSheetDidRemoveContent?(self)
+                _content.contentSheetDidRemoveContent?(self)
                 
                 //Notify delegate that sheet did hide
-                delegate?.widgetSheetDidHide?(self)
+                delegate?.contentSheetDidHide?(self)
             }
         }
         
         //Notify delegate view did disappear
-        delegate?.widgetSheetDidDisappear?(self)
+        delegate?.contentSheetDidDisappear?(self)
     }
     
     
+    //Overrides
+    //Transition
     public override var transitioningDelegate: UIViewControllerTransitioningDelegate? {
         get {
             return _transitionController
         }
         set {
-            fatalError("Attempt to set transition delegate of widget sheet, which is a read only property.")
+            fatalError("Attempt to set transition delegate of content sheet, which is a read only property.")
+        }
+    }
+    
+    //Status bar
+    public override var prefersStatusBarHidden: Bool {
+        get {
+            return self.content.prefersStatusBarHidden?(contentSheet: self) ?? false
+        }
+    }
+    
+    public override var preferredStatusBarStyle: UIStatusBarStyle {
+        get {
+            return self.content.preferredStatusBarStyle?(contentSheet: self) ?? .default
+        }
+    }
+    
+    public override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+        get {
+            return self.content.preferredStatusBarUpdateAnimation?(contentSheet: self) ?? .fade
         }
     }
 }
 
 
 
-extension FKWidgetSheet {
+extension ContentSheet {
     
     public override func willMove(toParentViewController parent: UIViewController?) {
         super.willMove(toParentViewController: parent)
         
         if parent is UINavigationController {
-            fatalError("Attempt to push widget sheet inside a navigation controller. Widget sheet can only be presented.")
+            fatalError("Attempt to push content sheet inside a navigation controller. content sheet can only be presented.")
         }
     }
     
@@ -356,7 +380,7 @@ extension FKWidgetSheet {
 
 
 //MARK: Interaction and gestures
-extension FKWidgetSheet {
+extension ContentSheet {
     
     @objc fileprivate func handlePan(_ recognizer: UIPanGestureRecognizer) {
         
@@ -385,7 +409,7 @@ extension FKWidgetSheet {
             if recognizer.state == .ended || recognizer.state == .cancelled {
                 
                 let duration = (1 - Double(progress))*TotalDuration
-                let finalState: FKWidgetSheetState
+                let finalState: ContentSheetState
                 if _state == .collapsed {
                     if possibleState == .minimised {
                         finalState = direction == .up ? .collapsed : .minimised
@@ -399,7 +423,7 @@ extension FKWidgetSheet {
                 }
                 
                 if finalState == .minimised {
-                    (_transitionController as? FKWidgetSheetTransitionDelegate)?.duration = duration
+                    (_transitionController as? ContentSheetTransitionDelegate)?.duration = duration
                     self.dismiss(animated: true, completion: nil)
                     return
                 }
@@ -449,8 +473,11 @@ extension FKWidgetSheet {
         }
     }
     
-    @inline(__always) fileprivate func _possibleStateChange(_ progress: CGFloat) -> FKWidgetSheetState {
-        let possibleState: FKWidgetSheetState
+    @inline(__always) fileprivate func _possibleStateChange(_ progress: CGFloat) -> ContentSheetState {
+        if expandedHeight <= collapsedHeight {
+            return .minimised
+        }
+        let possibleState: ContentSheetState
         if _state == .expanded {
             possibleState = .collapsed
         } else if _state == .collapsed {
@@ -465,7 +492,7 @@ extension FKWidgetSheet {
         return possibleState
     }
     
-    fileprivate func _panDirection(_ gesture: UIPanGestureRecognizer, view contentView: UIView, possibleStateChange possibleState: FKWidgetSheetState) -> PanDirection {
+    fileprivate func _panDirection(_ gesture: UIPanGestureRecognizer, view contentView: UIView, possibleStateChange possibleState: ContentSheetState) -> PanDirection {
         
         let velocity = gesture.velocity(in: self.view)
         let progress = contentView.frame.minY, totalHeight = self.view.frame.height
@@ -510,7 +537,7 @@ extension FKWidgetSheet {
 
 
 
-extension FKWidgetSheet: UIGestureRecognizerDelegate {
+extension ContentSheet: UIGestureRecognizerDelegate {
     
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         
@@ -548,88 +575,138 @@ extension FKWidgetSheet: UIGestureRecognizerDelegate {
 
 
 
-
-
-
-
-
-//MARK: UIViewController+WidgetSheet
-extension UIViewController: FKWidgetSheetContentProtocol {
-    
-    //MARK: Utility
-    public func widgetSheet() -> FKWidgetSheet? {
-        var viewController: UIResponder? = self
-        while viewController != nil {
-            if viewController is FKWidgetSheet {
-                return viewController as? FKWidgetSheet
+//Convenience
+extension ContentSheet {
+    public static func contentSheet(content: ContentSheetContentProtocol) -> ContentSheet? {
+        var responder: UIResponder? = content.view
+        while responder != nil {
+            if responder is ContentSheet {
+                return responder as? ContentSheet
             }
-            viewController = viewController?.next
+            responder = responder?.next
         }
         return nil
     }
+}
+
+
+
+
+
+//MARK: UIViewController+ContentSheet
+extension UIViewController: ContentSheetContentProtocol {
     
-    //MARK: FKWidgetSheetContentProtocol
-    open func widgetSheetWillAddContent(_ sheet: FKWidgetSheet) {
+    //MARK: Utility
+    public func contentSheet() -> ContentSheet? {
+        return ContentSheet.contentSheet(content: self)
+    }
+    
+    //MARK: ContentSheetContentProtocol
+    open func contentSheetWillAddContent(_ sheet: ContentSheet) {
         self.willMove(toParentViewController: sheet)
         sheet.addChildViewController(self)
         //        self.beginAppearanceTransition(true, animated: true)
     }
     
-    open func widgetSheetDidAddContent(_ sheet: FKWidgetSheet) {
+    open func contentSheetDidAddContent(_ sheet: ContentSheet) {
         //        self.endAppearanceTransition()
         self.didMove(toParentViewController: sheet)
     }
     
-    open func widgetSheetWillRemoveContent(_ sheet: FKWidgetSheet) {
+    open func contentSheetWillRemoveContent(_ sheet: ContentSheet) {
         self.willMove(toParentViewController: nil)
         self.removeFromParentViewController()
         //        self.beginAppearanceTransition(false, animated: true)
     }
     
-    open func widgetSheetDidRemoveContent(_ sheet: FKWidgetSheet) {
+    open func contentSheetDidRemoveContent(_ sheet: ContentSheet) {
         //        self.endAppearanceTransition()
         self.didMove(toParentViewController: nil)
     }
     
-    open func collapsedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat {
+    open func collapsedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
         return UIScreen.main.bounds.height*0.5
     }
 
-    //Returning the same height as collapsed height by default
-    open func expandedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat {
-        return self.collapsedHeight(containedIn: widgetSheet)
+    open func prefersStatusBarHidden(contentSheet: ContentSheet) -> Bool {
+        return false
     }
     
-    open func scrollViewToObserve(containedIn widgetSheet: FKWidgetSheet) -> UIScrollView? {
+    open func preferredStatusBarStyle(contentSheet: ContentSheet) -> UIStatusBarStyle {
+        return .default
+    }
+    
+    open func preferredStatusBarUpdateAnimation(contentSheet: ContentSheet) -> UIStatusBarAnimation {
+        return .fade
+    }
+    
+    //Returning the same height as collapsed height by default
+    open func expandedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
+        return self.collapsedHeight(containedIn: contentSheet)
+    }
+    
+    open func scrollViewToObserve(containedIn contentSheet: ContentSheet) -> UIScrollView? {
         return nil
     }
     
     //MARK: Presentation
-    open func present(inWidgetSheet viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Swift.Void)? = nil) {
+    open func present(inContentSheet content: ContentSheetContentProtocol, animated flag: Bool, completion: (() -> Swift.Void)? = nil) {
         
-        let widgetSheet = FKWidgetSheet(content: viewControllerToPresent)
-        self.present(widgetSheet, animated: true, completion: completion)
+        let contentSheet = ContentSheet(content: content)
+        self.present(contentSheet, animated: true, completion: completion)
     }
     
-    open func dismissWidgetSheet(animated flag: Bool, completion: (() -> Swift.Void)? = nil) {
-        self.widgetSheet()?.dismiss(animated: true, completion: completion)
+    open func dismissContentSheet(animated flag: Bool, completion: (() -> Swift.Void)? = nil) {
+        self.contentSheet()?.dismiss(animated: true, completion: completion)
     }
 }
 
 
 extension UINavigationController {
     
-    open override func collapsedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat {
-        return self.visibleViewController?.collapsedHeight(containedIn: widgetSheet) ?? UIScreen.main.bounds.height*0.5
+    open override func collapsedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
+        return self.visibleViewController?.collapsedHeight(containedIn: contentSheet) ?? UIScreen.main.bounds.height*0.5
     }
     
     //Returning the same height as collapsed height by default
-    open override func expandedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat {
-        return self.visibleViewController?.expandedHeight(containedIn: widgetSheet) ?? self.collapsedHeight(containedIn: widgetSheet)
+    open override func expandedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
+        return self.visibleViewController?.expandedHeight(containedIn: contentSheet) ?? self.collapsedHeight(containedIn: contentSheet)
     }
     
-    open override func scrollViewToObserve(containedIn widgetSheet: FKWidgetSheet) -> UIScrollView? {
-        return self.visibleViewController?.scrollViewToObserve(containedIn: widgetSheet)
+    open override func scrollViewToObserve(containedIn contentSheet: ContentSheet) -> UIScrollView? {
+        return self.visibleViewController?.scrollViewToObserve(containedIn: contentSheet)
+    }
+    
+    open override func prefersStatusBarHidden(contentSheet: ContentSheet) -> Bool {
+        return self.visibleViewController?.prefersStatusBarHidden(contentSheet: contentSheet) ?? false
+    }
+    
+    open override func preferredStatusBarStyle(contentSheet: ContentSheet) -> UIStatusBarStyle {
+        return self.visibleViewController?.preferredStatusBarStyle(contentSheet: contentSheet) ?? .default
+    }
+    
+    open override func preferredStatusBarUpdateAnimation(contentSheet: ContentSheet) -> UIStatusBarAnimation {
+        return self.visibleViewController?.preferredStatusBarUpdateAnimation(contentSheet: contentSheet) ?? .fade
+    }
+}
+
+
+extension UIView: ContentSheetContentProtocol {
+    
+    open var view: UIView! {
+        get {
+            return self
+        }
+    }
+    
+    //MARK: Presentation
+    open func dismissContentSheet(animated flag: Bool, completion: (() -> Swift.Void)? = nil) {
+        self.contentSheet()?.dismiss(animated: true, completion: completion)
+    }
+    
+    //MARK: Utility
+    public func contentSheet() -> ContentSheet? {
+        return ContentSheet.contentSheet(content: self)
     }
 }
 

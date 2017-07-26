@@ -1,6 +1,6 @@
 //
-//  FKWidgetSheetTransitionDelegate.swift
-//  WidgetActionSheet
+//  ContentSheetTransitionDelegate.swift
+//  ContentSheet
 //
 //  Created by Rajat Kumar Gupta on 20/07/17.
 //  Copyright © 2017 Rajat Kumar Gupta. All rights reserved.
@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 
-public class FKWidgetSheetAnimator: NSObject, UIViewControllerAnimatedTransitioning {
+public class ContentSheetAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     
     private var _duration: TimeInterval = 0.357
     public var duration: TimeInterval {
@@ -87,7 +87,7 @@ public class FKWidgetSheetAnimator: NSObject, UIViewControllerAnimatedTransition
 }
 
 
-public class FKWidgetSheetTransitionDelegate: NSObject, UIViewControllerTransitioningDelegate {
+public class ContentSheetTransitionDelegate: NSObject, UIViewControllerTransitioningDelegate {
     
     private var _duration: TimeInterval = 0.357
     public var duration: TimeInterval {
@@ -103,19 +103,19 @@ public class FKWidgetSheetTransitionDelegate: NSObject, UIViewControllerTransiti
     
     public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         
-        if let sheet = presented as? FKWidgetSheet {
+        if let sheet = presented as? ContentSheet {
             if sheet.backgroundView == nil && sheet.backgroundImage == nil {
                 sheet.backgroundView = presenting.view.snapshotView(afterScreenUpdates: false)
             }
         }
         
-        let animator: FKWidgetSheetAnimator = FKWidgetSheetAnimator()
+        let animator: ContentSheetAnimator = ContentSheetAnimator()
         animator.duration = duration
         return animator
     }
     
     public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        let animator: FKWidgetSheetAnimator = FKWidgetSheetAnimator()
+        let animator: ContentSheetAnimator = ContentSheetAnimator()
         animator.duration = duration
         animator.presenting = false
         return animator

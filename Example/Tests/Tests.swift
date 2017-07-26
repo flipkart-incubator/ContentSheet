@@ -1,6 +1,6 @@
 import UIKit
 import XCTest
-import FKWidgetSheet
+import ContentSheet
 
 class Tests: XCTestCase {
     

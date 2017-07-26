@@ -1,6 +1,6 @@
 //
 //  AppDelegate.swift
-//  FKWidgetSheet
+//  ContentSheet
 //
 //  Created by rajatgupta26 on 07/21/2017.
 //  Copyright (c) 2017 rajatgupta26. All rights reserved.

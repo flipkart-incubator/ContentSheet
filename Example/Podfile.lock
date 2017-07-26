@@ -1,16 +1,16 @@
 PODS:
-  - FKWidgetSheet (0.1.0)
+  - ContentSheet (0.1.2)
 
 DEPENDENCIES:
-  - FKWidgetSheet (from `../`)
+  - ContentSheet (from `../`)
 
 EXTERNAL SOURCES:
-  FKWidgetSheet:
+  ContentSheet:
     :path: "../"
 
 SPEC CHECKSUMS:
-  FKWidgetSheet: 22ec15b4cc5ef92d828f2aa3a3c2c0125a63d7fd
+  ContentSheet: 367f2ba330cbaddad27088e8d36dd927c9d44c14
 
-PODFILE CHECKSUM: b0c170055bbfa0472bee5822dd1755e59f8e1f32
+PODFILE CHECKSUM: e5a0465b2e72b8da225bfb117c12555b6310a100
 
 COCOAPODS: 1.2.1

@@ -16,6 +16,7 @@
 		7249D853CD9C31B8AE1BC594 /* Pods_FKWidgetSheet_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 772E3D5AEB364B2FE58EA884 /* Pods_FKWidgetSheet_Example.framework */; };
 		BBAE95AB1F221AE7006C44D9 /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBAE95AA1F221AE7006C44D9 /* SecondViewController.swift */; };
 		BBAE95AD1F221B29006C44D9 /* SecondViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = BBAE95AC1F221B29006C44D9 /* SecondViewController.xib */; };
+		BBAE95B31F2898A9006C44D9 /* CustomContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBAE95B21F2898A9006C44D9 /* CustomContent.swift */; };
 		FC844FD463F9D9B3A6317A51 /* Pods_FKWidgetSheet_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E5D194D4E297008C09787106 /* Pods_FKWidgetSheet_Tests.framework */; };
 /* End PBXBuildFile section */
 
@@ -49,7 +50,8 @@
 		9B3C9620D0DAA95EABA53DC1 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		BBAE95AA1F221AE7006C44D9 /* SecondViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecondViewController.swift; sourceTree = "<group>"; };
 		BBAE95AC1F221B29006C44D9 /* SecondViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SecondViewController.xib; sourceTree = "<group>"; };
-		C6CF198692FFF596144A5FC8 /* FKWidgetSheet.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = FKWidgetSheet.podspec; path = ../FKWidgetSheet.podspec; sourceTree = "<group>"; };
+		BBAE95B21F2898A9006C44D9 /* CustomContent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomContent.swift; sourceTree = "<group>"; };
+		C6CF198692FFF596144A5FC8 /* ContentSheet.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = ContentSheet.podspec; path = ../ContentSheet.podspec; sourceTree = "<group>"; };
 		E5D194D4E297008C09787106 /* Pods_FKWidgetSheet_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FKWidgetSheet_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -114,6 +116,7 @@
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
+				BBAE95B21F2898A9006C44D9 /* CustomContent.swift */,
 			);
 			name = "Example for FKWidgetSheet";
 			path = FKWidgetSheet;
@@ -147,7 +150,7 @@
 		607FACF51AFB993E008FA782 /* Podspec Metadata */ = {
 			isa = PBXGroup;
 			children = (
-				C6CF198692FFF596144A5FC8 /* FKWidgetSheet.podspec */,
+				C6CF198692FFF596144A5FC8 /* ContentSheet.podspec */,
 				9B3C9620D0DAA95EABA53DC1 /* README.md */,
 				131154DA315097CEB0702B28 /* LICENSE */,
 			);
@@ -368,6 +371,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BBAE95B31F2898A9006C44D9 /* CustomContent.swift in Sources */,
 				BBAE95AB1F221AE7006C44D9 /* SecondViewController.swift in Sources */,
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,

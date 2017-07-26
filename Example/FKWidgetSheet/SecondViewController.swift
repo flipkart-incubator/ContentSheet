@@ -1,13 +1,13 @@
 //
 //  SecondViewController.swift
-//  WidgetActionSheet
+//  ContentSheet
 //
 //  Created by Rajat Kumar Gupta on 19/07/17.
 //  Copyright © 2017 Rajat Kumar Gupta. All rights reserved.
 //
 
 import UIKit
-import FKWidgetSheet
+import ContentSheet
 
 class SecondViewController: UIViewController {
 
@@ -53,17 +53,17 @@ class SecondViewController: UIViewController {
     }
     
     
-    override open func collapsedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat {
+    override open func collapsedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
         return UIScreen.main.bounds.height*0.5
     }
     
     //Returning the same height as collapsed height by default
-    override open func expandedHeight(containedIn widgetSheet: FKWidgetSheet) -> CGFloat {
+    override open func expandedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
         return UIScreen.main.bounds.height
     }
     
 
-    override func scrollViewToObserve(containedIn widgetSheet: FKWidgetSheet) -> UIScrollView? {
+    override func scrollViewToObserve(containedIn contentSheet: ContentSheet) -> UIScrollView? {
         return table
     }
 }
@@ -79,7 +79,7 @@ extension SecondViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = table.dequeueReusableCell(withIdentifier: "id")
         
-        if self.widgetSheet() != nil {
+        if self.contentSheet() != nil {
             
             if self.navigationController != nil {
                 switch indexPath.row%4 {
@@ -116,19 +116,19 @@ extension SecondViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if self.widgetSheet() != nil {
+        if self.contentSheet() != nil {
             
             if self.navigationController != nil {
                 switch indexPath.row%4 {
                 case 0:
-                    self.dismissWidgetSheet(animated: true)
+                    self.dismissContentSheet(animated: true)
                 case 1:
                     let secondVC = SecondViewController(nibName: nil, bundle: nil)
-                    self.present(inWidgetSheet: secondVC, animated: true)
+                    self.present(inContentSheet: secondVC, animated: true)
                 case 2:
                     let secondVC = SecondViewController(nibName: nil, bundle: nil)
                     let navcon = UINavigationController(rootViewController: secondVC)
-                    self.present(inWidgetSheet: navcon, animated: true)
+                    self.present(inContentSheet: navcon, animated: true)
                 default:
                     let secondVC = SecondViewController(nibName: nil, bundle: nil)
                     self.navigationController?.pushViewController(secondVC, animated: true)
@@ -137,14 +137,14 @@ extension SecondViewController: UITableViewDataSource, UITableViewDelegate {
             } else {
                 switch indexPath.row%3 {
                 case 0:
-                    self.dismissWidgetSheet(animated: true)
+                    self.dismissContentSheet(animated: true)
                 case 1:
                     let secondVC = SecondViewController(nibName: nil, bundle: nil)
-                    self.present(inWidgetSheet: secondVC, animated: true)
+                    self.present(inContentSheet: secondVC, animated: true)
                 case 2:
                     let secondVC = SecondViewController(nibName: nil, bundle: nil)
                     let navcon = UINavigationController(rootViewController: secondVC)
-                    self.present(inWidgetSheet: navcon, animated: true)
+                    self.present(inContentSheet: navcon, animated: true)
                 default:
                     break
                 }
@@ -152,21 +152,18 @@ extension SecondViewController: UITableViewDataSource, UITableViewDelegate {
         } else {
             if indexPath.row%2 == 0 {
                 let secondVC = SecondViewController(nibName: nil, bundle: nil)
-                self.present(inWidgetSheet: secondVC, animated: true)
+                self.present(inContentSheet: secondVC, animated: true)
             } else {
                 let secondVC = SecondViewController(nibName: nil, bundle: nil)
                 let navcon = UINavigationController(rootViewController: secondVC)
-                self.present(inWidgetSheet: navcon, animated: true)
+                self.present(inContentSheet: navcon, animated: true)
             }
         }
-//        if self.widgetSheet() != nil {
-//            self.dismissWidgetSheet(animated: true)
-//        } else {
-//            let secondVC = SecondViewController(nibName: nil, bundle: nil)
-//            let widgetSheet = FKWidgetSheet(content: secondVC)
-//
-//            self.navigationController?.pushViewController(widgetSheet, animated: true)
-//        }
+    }
+    
+    
+    override func preferredStatusBarStyle(contentSheet: ContentSheet) -> UIStatusBarStyle {
+        return .lightContent
     }
 }
 
