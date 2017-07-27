@@ -19,6 +19,12 @@ class CustomView: UIView {
         return .lightContent
     }
     
+    
+    func expandedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
+        return UIScreen.main.bounds.height*0.75
+    }
+    
+    
     static func customView() -> CustomView {
         let view = CustomView()
         view.backgroundColor = UIColor.magenta
@@ -26,9 +32,9 @@ class CustomView: UIView {
         return view
     }
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.dismissContentSheet(animated: true)
-    }
+//    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        self.dismissContentSheet(animated: true)
+//    }
 }
 
 
@@ -43,4 +49,8 @@ class CustomObject: NSObject, ContentSheetContentProtocol {
             return view
         }
     }
+    
+    func expandedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
+        return UIScreen.main.bounds.height*0.75
+    }    
 }

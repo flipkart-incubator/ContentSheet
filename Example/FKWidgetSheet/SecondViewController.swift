@@ -57,7 +57,6 @@ class SecondViewController: UIViewController {
         return UIScreen.main.bounds.height*0.5
     }
     
-    //Returning the same height as collapsed height by default
     override open func expandedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
         return UIScreen.main.bounds.height
     }
