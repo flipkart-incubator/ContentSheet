@@ -437,7 +437,7 @@ extension ContentSheet {
                                 
                                 switch finalState {
                                 case .expanded:
-                                    contentView.frame = CGRect(x: 0, y: 0, width: contentView.frame.width, height: self.expandedHeight)
+                                    contentView.frame = CGRect(x: 0, y: self.view.bounds.height - self.expandedHeight, width: contentView.frame.width, height: self.expandedHeight)
                                     break
                                 case .collapsed:
                                     contentView.frame = CGRect(x: 0, y: totalHeight - self.collapsedHeight, width: contentView.frame.width, height: max(contentView.frame.height, self.collapsedHeight))
