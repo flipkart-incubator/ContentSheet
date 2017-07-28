@@ -25,7 +25,7 @@ s.homepage     = "https://github.com/flipkart-incubator/ContentSheet"
 
 # ―――  Spec License  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
-s.license      = { :type => "MIT", :file => "LICENSE" }
+s.license      = { :type => "Apache License, Version 2.0", :file => "LICENSE" }
 
 
 # ――― Author Metadata  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
