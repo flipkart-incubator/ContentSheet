@@ -50,6 +50,8 @@ class SecondViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        self.navigationItem.title = String(arc4random()%100)
     }
 
     override func viewDidAppear(_ animated: Bool) {

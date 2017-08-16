@@ -89,6 +89,7 @@ class ViewController: UIViewController {
         }
         
         let contentSheet = ContentSheet(content: content)
+        contentSheet.showDefaultHeader = (sender as! UIButton).tag != 2
         self.present(contentSheet, animated: true, completion: nil)
     }
 }

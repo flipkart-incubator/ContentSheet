@@ -22,10 +22,12 @@ import UIKit
 
 
 fileprivate let CollapsedHeightRatio: CGFloat = 0.5
-fileprivate let ThreshodVelocitySquare: CGFloat = 10000 //100*100
-fileprivate let ThreshodProgressFraction: CGFloat = 0.3
+fileprivate let ThresholdVelocitySquare: CGFloat = 10000 //100*100
+fileprivate let ThresholdProgressFraction: CGFloat = 0.3
 fileprivate let TotalDuration: Double = 0.5
 
+fileprivate let HeaderMinHeight: CGFloat = 44.0
+fileprivate let HeaderMaxHeight: CGFloat = HeaderMinHeight + UIApplication.shared.statusBarFrame.height
 
 
 @objc public protocol ContentSheetDelegate {
@@ -46,6 +48,8 @@ fileprivate let TotalDuration: Double = 0.5
     
     //View to be set as content
     var view: UIView! {get}
+    
+    @objc optional var navigationItem: UINavigationItem { get }
     
     //Callbacks
     @objc optional func contentSheetWillAddContent(_ sheet: ContentSheet)
@@ -93,6 +97,14 @@ public class ContentSheet: UIViewController {
     
     //Reference to content view of content controller
     fileprivate var _contentView: UIView?
+    
+    //Content container
+    fileprivate lazy var _contentContainer: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.clear
+        self.view.addSubview(view)
+        return view
+    } ()
     
     //background view for the action sheet
     //default backgorund
@@ -189,6 +201,36 @@ public class ContentSheet: UIViewController {
     //Delegate
     public weak var delegate: ContentSheetDelegate?
     
+    //Header
+    public var showDefaultHeader: Bool = true
+    
+    private var _navigationBar: UINavigationBar?
+    
+    public var contentNavigationBar: UINavigationBar? {
+        get {
+            return _navigationBar
+        }
+    }
+
+    public var contentNavigationItem: UINavigationItem? {
+        get {
+            return _navigationBar?.items?.last
+        }
+    }
+    
+    
+    private func _defaultHeader() -> UINavigationBar {
+        
+        var frame = self.view.frame
+        frame.size.height = 44.0;
+        
+        let navigationBar = UINavigationBar(frame: frame)
+        navigationBar.delegate = self
+        
+        return navigationBar
+    }
+    
+    
     //Gesture
     fileprivate lazy var _panGesture: UIPanGestureRecognizer = {
         let gesture = UIPanGestureRecognizer.init(target: self, action: #selector(handlePan(_:)))
@@ -217,6 +259,26 @@ public class ContentSheet: UIViewController {
         //Load content view
         if let contentView = _content.view {
             _contentView = contentView
+            
+            if showDefaultHeader {
+                
+                let navigationItem: UINavigationItem
+                
+                self._navigationBar = _defaultHeader()
+                
+                if let item = self.content.navigationItem {
+                    navigationItem = item
+                } else {
+                    navigationItem = UINavigationItem()
+                }
+                
+                if navigationItem.leftBarButtonItem == nil {
+                    let cancelButton = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(cancelButtonPressed(_:)))
+                    navigationItem.leftBarButtonItem = cancelButton
+                }
+                
+                self._navigationBar!.items = [navigationItem]
+            }
         }
         self.view.backgroundColor = UIColor.clear
     }
@@ -240,20 +302,30 @@ public class ContentSheet: UIViewController {
                 let proposedCollapsedHeight = max(_content.collapsedHeight?(containedIn: self) ?? 0.0, 0.0)
                 collapsedHeight = proposedCollapsedHeight == 0.0 ? CollapsedHeightRatio*view.bounds.height : proposedCollapsedHeight
                 var frame = CGRect(x: 0, y: self.view.bounds.height, width: self.view.bounds.width, height: collapsedHeight)
+                _contentContainer.frame = frame
+                
+                if let navigationBar = self._navigationBar {
+                    _contentContainer.addSubview(navigationBar)
+                }
+                
                 contentView.frame = frame
                 
                 //Content controller should use this do any preps before content view is added
                 // e.g. in case of view controllers, they might wanna prepare for appearance transitions
                 _content.contentSheetWillAddContent?(self)
-                self.view.addSubview(contentView)
+                _contentContainer.addSubview(contentView)
+                
+                //Layout content
+                self.layoutContentSubviews()
                 
                 //Do not expand if no expanded height
                 expandedHeight = max(min(max(_content.expandedHeight?(containedIn: self) ?? 0.0, 0.0), self.view.frame.height), collapsedHeight)
                 
                 //Animate content
-                frame.origin.y -= collapsedHeight
+                frame.origin.y = self.view.bounds.height - collapsedHeight
+                frame.size.height = collapsedHeight
                 self.transitionCoordinator?.animate(alongsideTransition: { (_) in
-                    contentView.frame = frame
+                    self._contentContainer.frame = frame
                 }, completion: nil)
                 
                 //Notify delegate that sheet will show
@@ -277,7 +349,7 @@ public class ContentSheet: UIViewController {
                 _content.contentSheetDidAddContent?(self)
                 
                 //Check if there is a scrollview to observer
-                _contentView?.addGestureRecognizer(_panGesture)
+                _contentContainer.addGestureRecognizer(_panGesture)
                 
                 //Notify delegate that sheet did show
                 delegate?.contentSheetDidShow?(self)
@@ -293,16 +365,16 @@ public class ContentSheet: UIViewController {
         
         if _state == .minimised {
             
-            if let contentView = _contentView {
+            if _contentView != nil {
                 //Content controller should use this do any preps before content view is removed
                 // e.g. in case of view controllers, they might wanna prepare for appearance transitions
                 _content.contentSheetWillRemoveContent?(self)
                 
                 //Animate content
-                var frame = contentView.frame
+                var frame = _contentContainer.frame
                 frame.origin.y = self.view.frame.maxY
                 self.transitionCoordinator?.animate(alongsideTransition: { (_) in
-                    contentView.frame = frame
+                    self._contentContainer.frame = frame
                 }, completion: nil)
                 
                 //Notify delegate that sheet will hide
@@ -385,6 +457,10 @@ extension ContentSheet {
         _state = .minimised
         super.dismiss(animated: flag, completion: completion)
     }
+    
+    @objc fileprivate func cancelButtonPressed(_ sender: UIBarButtonItem?) {
+        self.dismiss(animated: true)
+    }
 }
 
 
@@ -399,24 +475,26 @@ extension ContentSheet {
         if let contentView = _contentView {
             let translation = recognizer.translation(in: self.view)
             
-            let y = contentView.frame.minY, totalHeight = self.view.frame.height
+            let y = _contentContainer.frame.minY, totalHeight = self.view.frame.height
 
             let possibleState = _possibleStateChange(y)
 
             let minY = possibleState == .minimised ? totalHeight - collapsedHeight : totalHeight - expandedHeight
             let maxY = possibleState == .minimised ? totalHeight : totalHeight - collapsedHeight
 
-            let direction: PanDirection = _panDirection(recognizer, view: contentView, possibleStateChange: possibleState)
+            let direction: PanDirection = _panDirection(recognizer, view: _contentContainer, possibleStateChange: possibleState)
             let progress = direction == .down ? (y - minY)/(maxY - minY) : (maxY - y)/(maxY - minY)
 
             // manipulate frame if gesture is in progress
             if recognizer.state == .began || recognizer.state == .changed {
                 if (y + translation.y >= totalHeight - expandedHeight) && (y + translation.y <= totalHeight/* - collapsedHeight*/) {
-                    contentView.frame = CGRect(x: 0, y: y + translation.y, width: contentView.frame.width, height: totalHeight - (y + translation.y))
+                    let frame = CGRect(x: 0, y: y + translation.y, width: contentView.frame.width, height: totalHeight - (y + translation.y))
                     recognizer.setTranslation(CGPoint.zero, in: self.view)
+                    
+                    _contentContainer.frame = frame
                 }
             }
-            
+
             // animate to either state if gesture and ended or cancelled
             if recognizer.state == .ended || recognizer.state == .cancelled {
                 
@@ -449,10 +527,15 @@ extension ContentSheet {
                                 
                                 switch finalState {
                                 case .expanded:
-                                    contentView.frame = CGRect(x: 0, y: self.view.bounds.height - self.expandedHeight, width: contentView.frame.width, height: self.expandedHeight)
+                                    let y = self.view.bounds.height - self.expandedHeight
+                                    let frame = CGRect(x: 0, y: y, width: self._contentContainer.frame.width, height: self.expandedHeight)
+                                    self._contentContainer.frame = frame
+                                    
+                                    self.layoutContentSubviews()
                                     break
                                 case .collapsed:
-                                    contentView.frame = CGRect(x: 0, y: totalHeight - self.collapsedHeight, width: contentView.frame.width, height: max(contentView.frame.height, self.collapsedHeight))
+                                    let frame = CGRect(x: 0, y: totalHeight - self.collapsedHeight, width: self._contentContainer.frame.width, height: max(self._contentContainer.frame.height, self.collapsedHeight))
+                                    self._contentContainer.frame = frame
                                     break
 //                                case .minimised:
 //                                    contentView.frame = CGRect(x: 0, y: totalHeight, width: contentView.frame.width, height: contentView.frame.height)
@@ -462,7 +545,12 @@ extension ContentSheet {
                                 }},
                                completion: { [weak self] _ in
                                 if let strong = self {
+                                    
                                     strong._state = finalState
+                                    
+                                    if let bar = strong.contentNavigationBar {
+                                        strong._contentContainer.bringSubview(toFront: bar)
+                                    }
                                     
                                     switch finalState {
                                     case .expanded:
@@ -470,7 +558,7 @@ extension ContentSheet {
                                         break;
                                     case .collapsed:
                                         strong._scrollviewToObserve?.isScrollEnabled = false
-                                        contentView.frame = CGRect(x: 0, y: totalHeight - strong.collapsedHeight, width: contentView.frame.width, height: strong.collapsedHeight)
+                                        strong.layoutContentSubviews()
                                         break;
 //                                    case .minimised:
 //                                        strong._scrollviewToObserve?.isScrollEnabled = false
@@ -482,8 +570,44 @@ extension ContentSheet {
                                     }
                                 }})
             }
+            
+            self.layoutContentSubviews()
         }
     }
+    
+    
+    fileprivate func layoutContentSubviews() {
+        
+        if let contentView = self._contentView {
+            if self.showDefaultHeader, let navigationBar = self.contentNavigationBar {
+                
+                let frame = self._contentContainer.frame
+                
+                if frame.origin.y < UIApplication.shared.statusBarFrame.maxY {
+                    
+                    var subviewFrame = CGRect(x: 0, y: 0, width: frame.width, height: HeaderMaxHeight)
+                    navigationBar.frame = subviewFrame
+                    
+                    subviewFrame.origin.y = subviewFrame.maxY
+                    subviewFrame.size.height = frame.height - subviewFrame.origin.y
+                    
+                    contentView.frame = subviewFrame
+                    
+                } else {
+                    var subviewFrame = CGRect(x: 0, y: 0, width: frame.width, height: HeaderMinHeight)
+                    navigationBar.frame = subviewFrame
+                    
+                    subviewFrame.origin.y = subviewFrame.maxY
+                    subviewFrame.size.height = frame.height - subviewFrame.origin.y
+                    
+                    contentView.frame = subviewFrame
+                }
+            } else {
+                contentView.frame = self._contentContainer.bounds
+            }
+        }
+    }
+    
     
     @inline(__always) fileprivate func _possibleStateChange(_ progress: CGFloat) -> ContentSheetState {
         if expandedHeight <= collapsedHeight {
@@ -513,7 +637,7 @@ extension ContentSheet {
         let max = possibleState == .minimised ? totalHeight : totalHeight - collapsedHeight //totalHeight - collapsedHeight//
         
         let ratio = (max - progress)/(progress - min)
-        let thresholdVelocitySquare = (ratio >= 0.5 && ratio <= 2.0) ? 0.0 : ThreshodVelocitySquare
+        let thresholdVelocitySquare = (ratio >= 0.5 && ratio <= 2.0) ? 0.0 : ThresholdVelocitySquare
         
         let direction: PanDirection
         
@@ -532,8 +656,8 @@ extension ContentSheet {
         if dismissOnTouchOutside {
             let touch =  touches.first
             var contentInteracted = false
-            if let contentview = _contentView, let locationInContent = touch?.location(in: contentview) {
-                contentInteracted = contentview.point(inside: locationInContent, with: event)
+            if let locationInContent = touch?.location(in: _contentContainer) {
+                contentInteracted = _contentContainer.point(inside: locationInContent, with: event)
             }
             if !contentInteracted {
                 self.dismiss(animated: true, completion: nil)
@@ -563,7 +687,7 @@ extension ContentSheet: UIGestureRecognizerDelegate {
             _scrollviewToObserve = scrollview
         }
         
-        guard let scrollView = _scrollviewToObserve, let contentView = _contentView else {
+        guard let scrollView = _scrollviewToObserve else {
             return false
         }
         
@@ -573,7 +697,7 @@ extension ContentSheet: UIGestureRecognizerDelegate {
         
         
         
-        let direction = _panDirection(_panGesture, view: contentView, possibleStateChange: _possibleStateChange(contentView.frame.minY))
+        let direction = _panDirection(_panGesture, view: _contentContainer, possibleStateChange: _possibleStateChange(_contentContainer.frame.minY))
         
         if ((_state == .expanded) && (scrollView.contentOffset.y + scrollView.contentInset.top == 0) && (direction == .down)) || (_state == .collapsed) {
             scrollView.isScrollEnabled = false
@@ -603,6 +727,16 @@ extension ContentSheet {
 
 
 
+//UIBarPositioningDelegate
+extension ContentSheet: UINavigationBarDelegate {
+    
+    public func position(for bar: UIBarPositioning) -> UIBarPosition {
+        return .top
+    }
+}
+
+
+
 
 
 //MARK: UIViewController+ContentSheet
@@ -611,6 +745,10 @@ extension UIViewController: ContentSheetContentProtocol {
     //MARK: Utility
     public func contentSheet() -> ContentSheet? {
         return ContentSheet.contentSheet(content: self)
+    }
+    
+    public func cs_navigationBar() -> UINavigationBar? {
+        return self.navigationController != nil ? self.navigationController?.navigationBar : self.contentSheet()?.contentNavigationBar
     }
     
     //MARK: ContentSheetContentProtocol
@@ -721,6 +859,7 @@ extension UIView: ContentSheetContentProtocol {
         return ContentSheet.contentSheet(content: self)
     }
 }
+
 
 
 
