@@ -64,6 +64,36 @@ override func scrollViewToObserve(containedIn contentSheet: ContentSheet) -> UIS
 }
 ```
 
+ContentSheet shows a navigation bar on top of content by default.
+To control this behaviour use this property of ContentSheet instance
+
+```swift
+public var showDefaultHeader: Bool = true
+```
+
+If you present a UIViewController in ContentSheet, default header will take the navigation item of view controller and push that on the default navigation bar's stack.
+That means just as in case of UINavigationController, the title and left, right bar buttons of your view controller's navigationItem will show on top by default.
+If there is no left bar button, content sheet will show a close button there.
+
+If you are presenting anything other than, UIViewController, use this property from ContentSheetContentProtocol
+```swift
+@objc optional var navigationItem: UINavigationItem { get }
+```
+
+If you need to access the default navigation bar or item, use this property of content sheet instance
+```swift
+public var contentNavigationBar: UINavigationBar?
+public var contentNavigationItem: UINavigationItem?
+```
+You can customise the navigation item content's with these. Or just disable the default header using ```swift showDefaultHeader``` and make the whole content yourself.
+
+In case a UIViewController instance is presented, this convenience method lets you access the navigation bar on top
+```swift
+public func cs_navigationBar()
+```
+This method first checks if the UIViewController instance is inside a navigationController. If so, it'll return navigationController's navigation bar else content sheet's navigation bar 
+
+
 Control collapsed and expanded heights using
 
 ```swift
@@ -100,6 +130,7 @@ Also, take a look at 'presentCustomView(_:)' function in [ViewController.swift](
 Use these properties of content sheet to customize behaviour
 
 ```swift
+public var showDefaultHeader: Bool = true
 public var blurBackground: Bool = true
 public var blurStyle: UIBlurEffectStyle = .dark
 public var dismissOnTouchOutside: Bool = true
@@ -135,6 +166,11 @@ Return a content view using this from content controller
 
 ```swift
 var view: UIView! {get}
+```
+
+Return a navigation item this from content controller
+```swift
+@objc optional var navigationItem: UINavigationItem { get }
 ```
 
 Prepare for content view lifecycle events using these (Checkout UIViewController extension in [ContentSheet.swift](/ContentSheet/Classes/ContentSheet.swift))

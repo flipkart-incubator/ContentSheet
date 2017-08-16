@@ -49,6 +49,7 @@ fileprivate let HeaderMaxHeight: CGFloat = HeaderMinHeight + UIApplication.share
     //View to be set as content
     var view: UIView! {get}
     
+    //NavigationItem
     @objc optional var navigationItem: UINavigationItem { get }
     
     //Callbacks
