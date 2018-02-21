@@ -535,7 +535,7 @@ extension ContentSheet {
                                     self.layoutContentSubviews()
                                     break
                                 case .collapsed:
-                                    let frame = CGRect(x: 0, y: totalHeight - self.collapsedHeight, width: self._contentContainer.frame.width, height: max(self._contentContainer.frame.height, self.collapsedHeight))
+                                    let frame = CGRect(x: 0, y: totalHeight - self.collapsedHeight, width: self._contentContainer.frame.width, height: self.collapsedHeight)
                                     self._contentContainer.frame = frame
                                     break
 //                                case .minimised:
