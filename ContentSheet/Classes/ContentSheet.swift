@@ -558,7 +558,7 @@ extension ContentSheet {
                                         strong._scrollviewToObserve?.isScrollEnabled = true
                                         break;
                                     case .collapsed:
-                                        strong._scrollviewToObserve?.isScrollEnabled = false
+                                        strong._scrollviewToObserve?.isScrollEnabled = strong.collapsedHeight < strong.view.frame.size.height ? false : true
                                         strong.layoutContentSubviews()
                                         break;
 //                                    case .minimised:
@@ -678,7 +678,7 @@ extension ContentSheet: UIGestureRecognizerDelegate {
     
     public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if gestureRecognizer == _panGesture {
-            return collapsedHeight < expandedHeight
+            return collapsedHeight <= expandedHeight
         }
         return true
     }
@@ -708,9 +708,9 @@ extension ContentSheet: UIGestureRecognizerDelegate {
         
         let direction = _panDirection(_panGesture, view: _contentContainer, possibleStateChange: _possibleStateChange(_contentContainer.frame.minY))
         
-        if (collapsedHeight < expandedHeight)
+        if (collapsedHeight <= expandedHeight)
             &&
-            (((_state == .expanded) && (scrollView.contentOffset.y + scrollView.contentInset.top == 0) && (direction == .down)) || (_state == .collapsed)) {
+            (((_state == .expanded) && (scrollView.contentOffset.y + scrollView.contentInset.top == 0) && (direction == .down)) || (_state == .collapsed && collapsedHeight < self.view.frame.size.height)) {
             scrollView.isScrollEnabled = false
         } else {
             scrollView.isScrollEnabled = true
