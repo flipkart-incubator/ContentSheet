@@ -440,6 +440,18 @@ public class ContentSheet: UIViewController {
             return self.content.preferredStatusBarUpdateAnimation?(contentSheet: self) ?? .fade
         }
     }
+    
+    public func resetBottomSheetHeight(collapsedHeight: CGFloat, expandedHeight: CGFloat) {
+        self.collapsedHeight = collapsedHeight
+        self.expandedHeight = expandedHeight
+        
+        let frame = CGRect(x: 0, y: self.view.frame.height - self.collapsedHeight, width: self._contentContainer.frame.width, height: self.collapsedHeight)
+        
+        UIView.animate(withDuration: 0.2) {
+            self._contentContainer.frame = frame
+            self.layoutContentSubviews()
+        }
+    }
 }
 
 
