@@ -570,7 +570,7 @@ extension ContentSheet {
                                         strong._scrollviewToObserve?.isScrollEnabled = true
                                         break;
                                     case .collapsed:
-                                        strong._scrollviewToObserve?.isScrollEnabled = strong.collapsedHeight < strong.view.frame.size.height ? false : true
+                                        strong._scrollviewToObserve?.isScrollEnabled = strong.collapsedHeight < strong.maxExpandableHeight() ? false : true
                                         strong.layoutContentSubviews()
                                         break;
 //                                    case .minimised:
@@ -722,7 +722,7 @@ extension ContentSheet: UIGestureRecognizerDelegate {
         
         if (collapsedHeight <= expandedHeight)
             &&
-            (((_state == .expanded) && (scrollView.contentOffset.y + scrollView.contentInset.top == 0) && (direction == .down)) || (_state == .collapsed && collapsedHeight < self.view.frame.size.height)) {
+            (((_state == .expanded) && (scrollView.contentOffset.y + scrollView.contentInset.top == 0) && (direction == .down)) || (_state == .collapsed && collapsedHeight < self.maxExpandableHeight())) {
             scrollView.isScrollEnabled = false
         } else {
             scrollView.isScrollEnabled = true
@@ -881,6 +881,20 @@ extension UIView: ContentSheetContentProtocol {
     public func contentSheet() -> ContentSheet? {
         return ContentSheet.contentSheet(content: self)
     }
+}
+
+extension ContentSheet {
+    func safeAreaInsets() -> UIEdgeInsets {
+        if #available(iOS 11.0, *) {
+            return UIApplication.shared.keyWindow?.safeAreaInsets ?? .zero
+        }
+        return .zero
+    }
+    
+    func maxExpandableHeight() -> CGFloat {
+        return view.frame.size.height - safeAreaInsets().top
+    }
+    
 }
 
 
