@@ -170,13 +170,26 @@ public class ContentSheet: UIViewController {
     public var blurBackground: Bool = true
     public var blurStyle: UIBlurEffectStyle = .dark
     public var dismissOnTouchOutside: Bool = true
+    public var handleKeyboard: Bool = false {
+        didSet {
+            self._stopObservingKeyboard()
+            if handleKeyboard {
+                self._startObservingKeyboard()
+            }
+        }
+    }
     
     //Scroll management related
     fileprivate weak var _scrollviewToObserve: UIScrollView?
     
     fileprivate var collapsedHeight: CGFloat = 0.0
     fileprivate var expandedHeight: CGFloat = 0.0
-    
+
+    fileprivate var _oldCollapsedHeight: CGFloat = 0
+    fileprivate var _oldExpandedHeight: CGFloat = 0
+    fileprivate var _keyboardFrame: CGRect?
+    fileprivate var _oldScrollInsets: UIEdgeInsets?
+
     //Rotation
     public override var shouldAutorotate: Bool {
         get {
@@ -336,6 +349,10 @@ public class ContentSheet: UIViewController {
         
         //Notify delegate that view will appear
         delegate?.contentSheetWillAppear?(self)
+        
+        if self.handleKeyboard {
+            self._startObservingKeyboard()
+        }
     }
     
     override public func viewDidAppear(_ animated: Bool) {
@@ -385,6 +402,10 @@ public class ContentSheet: UIViewController {
         
         //Notify delegate view will disappear
         delegate?.contentSheetWillDisappear?(self)
+
+        if self.handleKeyboard {
+            self._stopObservingKeyboard()
+        }
     }
     
     override public func viewDidDisappear(_ animated: Bool) {
@@ -450,6 +471,69 @@ public class ContentSheet: UIViewController {
         UIView.animate(withDuration: 0.2) {
             self._contentContainer.frame = frame
             self.layoutContentSubviews()
+        }
+    }
+    
+    fileprivate func _startObservingKeyboard() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(_keyboardWillAppear(_:)),
+                                               name: NSNotification.Name.UIKeyboardWillShow,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(_keyboardWillDisappear(_:)),
+                                               name: NSNotification.Name.UIKeyboardWillHide,
+                                               object: nil)
+    }
+    
+    fileprivate func _stopObservingKeyboard() {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+    }
+    
+    @objc private func _keyboardWillAppear(_ notification: Notification) {
+        var animationDuration: TimeInterval = 0.357
+        var keyboardHeight: CGFloat = 216
+        if let userInfo = notification.userInfo {
+            animationDuration = userInfo[UIKeyboardAnimationDurationUserInfoKey] as? TimeInterval ?? animationDuration
+            self._keyboardFrame = (userInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
+            keyboardHeight = self._keyboardFrame?.height ?? keyboardHeight
+        }
+        
+        self._oldCollapsedHeight = self.collapsedHeight
+        self._oldExpandedHeight = self.expandedHeight
+        
+        
+        let maxHeight = maxExpandableHeight();
+        
+        resetBottomSheetHeight(collapsedHeight: min(maxHeight, self.collapsedHeight + keyboardHeight), expandedHeight: min(maxHeight, self.expandedHeight + keyboardHeight))
+
+        if let scrollview = _content.scrollViewToObserve?(containedIn: self) {
+            _scrollviewToObserve = scrollview
+            self._oldScrollInsets = scrollview.contentInset
+            
+            scrollview.contentInset = UIEdgeInsets(top: scrollview.contentInset.top, left: scrollview.contentInset.left, bottom: scrollview.contentInset.bottom + keyboardHeight, right: scrollview.contentInset.right)
+            
+            if let firstResponder = scrollview.firstResponder {
+                let focusRect = firstResponder.convert(firstResponder.frame, to: scrollview)
+                scrollview.scrollRectToVisible(focusRect, animated: true)
+            }
+        }
+    }
+    
+    @objc private func _keyboardWillDisappear(_ notification: Notification) {
+        var animationDuration: TimeInterval = 0.357
+        if let userInfo = notification.userInfo, let duration = userInfo[UIKeyboardAnimationDurationUserInfoKey] as? TimeInterval {
+            animationDuration = duration
+        }
+
+        self._keyboardFrame = nil
+        
+        resetBottomSheetHeight(collapsedHeight: self._oldCollapsedHeight, expandedHeight: self._oldExpandedHeight)
+
+        if let scrollview = _content.scrollViewToObserve?(containedIn: self) {
+            _scrollviewToObserve = scrollview
+            
+            scrollview.contentInset = self._oldScrollInsets ?? UIEdgeInsets.zero
         }
     }
 }
@@ -898,6 +982,19 @@ extension ContentSheet {
 }
 
 
+extension UIView {
+    var firstResponder: UIView? {
+        guard !isFirstResponder else { return self }
+        
+        for subview in subviews {
+            if let firstResponder = subview.firstResponder {
+                return firstResponder
+            }
+        }
+        
+        return nil
+    }
+}
 
 
 
