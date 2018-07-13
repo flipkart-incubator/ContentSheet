@@ -351,6 +351,7 @@ public class ContentSheet: UIViewController {
         delegate?.contentSheetWillAppear?(self)
         
         if self.handleKeyboard {
+            self._stopObservingKeyboard()
             self._startObservingKeyboard()
         }
     }
