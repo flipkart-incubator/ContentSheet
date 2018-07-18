@@ -178,6 +178,11 @@ public class ContentSheet: UIViewController {
             }
         }
     }
+    public var enablePanGesture: Bool = true {
+        didSet {
+            self._panGesture.isEnabled = enablePanGesture
+        }
+    }
     
     //Scroll management related
     fileprivate weak var _scrollviewToObserve: UIScrollView?
@@ -504,7 +509,7 @@ public class ContentSheet: UIViewController {
         }
     }
     
-    public func resetBottomSheetHeight(collapsedHeight: CGFloat, expandedHeight: CGFloat) {
+    public func resetContentSheetHeight(collapsedHeight: CGFloat, expandedHeight: CGFloat) {
         self.collapsedHeight = collapsedHeight
         self.expandedHeight = expandedHeight
         
@@ -575,7 +580,7 @@ public class ContentSheet: UIViewController {
         
         let maxHeight = maxExpandableHeight();
         
-        resetBottomSheetHeight(collapsedHeight: min(maxHeight, self._oldCollapsedHeight + keyboardHeight), expandedHeight: min(maxHeight, self._oldExpandedHeight + keyboardHeight))
+        resetContentSheetHeight(collapsedHeight: min(maxHeight, self._oldCollapsedHeight + keyboardHeight), expandedHeight: min(maxHeight, self._oldExpandedHeight + keyboardHeight))
     }
     
     @objc private func _keyboardDidAppear(_ notification: Notification) {
@@ -622,7 +627,7 @@ public class ContentSheet: UIViewController {
     
     @objc private func _keyboardWillDisappear(_ notification: Notification) {
         if self._keyboardPresent {
-            resetBottomSheetHeight(collapsedHeight: self._oldCollapsedHeight, expandedHeight: self._oldExpandedHeight)
+            resetContentSheetHeight(collapsedHeight: self._oldCollapsedHeight, expandedHeight: self._oldExpandedHeight)
         }
     }
 
@@ -637,7 +642,7 @@ public class ContentSheet: UIViewController {
             
             let maxHeight = maxExpandableHeight();
             
-            resetBottomSheetHeight(collapsedHeight: min(maxHeight, self.collapsedHeight + keyboardHeight), expandedHeight: min(maxHeight, self.expandedHeight + keyboardHeight))
+            resetContentSheetHeight(collapsedHeight: min(maxHeight, self.collapsedHeight + keyboardHeight), expandedHeight: min(maxHeight, self.expandedHeight + keyboardHeight))
         }
     }
 
