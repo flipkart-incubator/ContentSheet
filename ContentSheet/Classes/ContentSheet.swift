@@ -226,7 +226,15 @@ public class ContentSheet: UIViewController {
             return _navigationBar
         }
     }
-
+    
+    private var _contentHeader: UIView?
+    
+    public var contentHeader: UIView? {
+        get {
+            return _contentHeader
+        }
+    }
+    
     public var contentNavigationItem: UINavigationItem? {
         get {
             return _navigationBar?.items?.last
@@ -234,7 +242,7 @@ public class ContentSheet: UIViewController {
     }
     
     
-    private func _defaultHeader() -> UINavigationBar {
+    private func _defaultHeader() -> UIView {
         
         var frame = self.view.frame
         frame.size.height = 44.0;
@@ -242,10 +250,42 @@ public class ContentSheet: UIViewController {
         let navigationBar = UINavigationBar(frame: frame)
         navigationBar.delegate = self
         
-        return navigationBar
+        _navigationBar = navigationBar
+        
+        let header = UIView(frame: frame)
+        header.tintColor = navigationBar.tintColor
+        header.backgroundColor = UIColor(white: 1.0, alpha: 0.7)
+        
+        navigationBar.setBackgroundImage(UIImage(), for: .default)
+        navigationBar.isTranslucent = true
+
+        header.addSubview(navigationBar)
+        
+        _setBlurrEffect(true, on: header)
+        
+        return header
     }
     
-    
+    fileprivate var _blurEffectView: UIVisualEffectView?
+    private func _setBlurrEffect(_ add: Bool, on view: UIView?) {
+        if let onView = view ?? self.contentHeader {
+            if add {
+                let blurEffect = UIBlurEffect(style: .extraLight)
+                _blurEffectView = UIVisualEffectView(effect: blurEffect)
+                if let blurEffectView = _blurEffectView {
+                    blurEffectView.frame = onView.bounds
+                    onView.insertSubview(blurEffectView, at: 0)
+                }
+            } else {
+                onView.alpha = 1
+                if let blurEffectView = _blurEffectView {
+                    blurEffectView.removeFromSuperview()
+                }
+                _blurEffectView = nil
+            }
+        }
+    }
+
     //Gesture
     fileprivate lazy var _panGesture: UIPanGestureRecognizer = {
         let gesture = UIPanGestureRecognizer.init(target: self, action: #selector(handlePan(_:)))
@@ -277,9 +317,9 @@ public class ContentSheet: UIViewController {
             
             if showDefaultHeader {
                 
-                let navigationItem: UINavigationItem
+                self._contentHeader = _defaultHeader()
                 
-                self._navigationBar = _defaultHeader()
+                let navigationItem: UINavigationItem
                 
                 if let item = self.content.navigationItem {
                     navigationItem = item
@@ -319,8 +359,8 @@ public class ContentSheet: UIViewController {
                 var frame = CGRect(x: 0, y: self.view.bounds.height, width: self.view.bounds.width, height: collapsedHeight)
                 _contentContainer.frame = frame
                 
-                if let navigationBar = self._navigationBar {
-                    _contentContainer.addSubview(navigationBar)
+                if let header = self.contentHeader {
+                    _contentContainer.addSubview(header)
                 }
                 
                 contentView.frame = frame
@@ -723,7 +763,7 @@ extension ContentSheet {
                                     
                                     strong._state = finalState
                                     
-                                    if let bar = strong.contentNavigationBar {
+                                    if let bar = strong.contentHeader {
                                         strong._contentContainer.bringSubview(toFront: bar)
                                     }
                                     
@@ -754,14 +794,14 @@ extension ContentSheet {
     fileprivate func layoutContentSubviews() {
         
         if let contentView = self._contentView {
-            if self.showDefaultHeader, let navigationBar = self.contentNavigationBar {
+            if self.showDefaultHeader, let header = self.contentHeader {
                 
                 let frame = self._contentContainer.frame
                 
                 if frame.origin.y < UIApplication.shared.statusBarFrame.maxY {
                     
-                    var subviewFrame = CGRect(x: 0, y: 0, width: frame.width, height: HeaderMaxHeight)
-                    navigationBar.frame = subviewFrame
+                    var subviewFrame = CGRect(x: 0, y: 0, width: frame.width, height: min(HeaderMaxHeight, (HeaderMinHeight + (UIApplication.shared.statusBarFrame.maxY - frame.origin.y))))
+                    header.frame = subviewFrame
                     
                     subviewFrame.origin.y = subviewFrame.maxY
                     subviewFrame.size.height = frame.height - subviewFrame.origin.y
@@ -770,12 +810,20 @@ extension ContentSheet {
                     
                 } else {
                     var subviewFrame = CGRect(x: 0, y: 0, width: frame.width, height: HeaderMinHeight)
-                    navigationBar.frame = subviewFrame
+                    header.frame = subviewFrame
                     
                     subviewFrame.origin.y = subviewFrame.maxY
                     subviewFrame.size.height = frame.height - subviewFrame.origin.y
                     
                     contentView.frame = subviewFrame
+                }
+                
+                if let navigationBar = self.contentNavigationBar, let blurView = self._blurEffectView {
+                    blurView.frame = header.bounds
+                    navigationBar.frame = CGRect(x: navigationBar.frame.origin.x,
+                                                 y: header.bounds.height - navigationBar.frame.height,
+                                                 width: navigationBar.frame.width,
+                                                 height: navigationBar.frame.height)
                 }
             } else {
                 contentView.frame = self._contentContainer.bounds
@@ -1046,15 +1094,9 @@ extension UIView: ContentSheetContentProtocol {
 }
 
 extension ContentSheet {
-    func safeAreaInsets() -> UIEdgeInsets {
-        if #available(iOS 11.0, *) {
-            return UIApplication.shared.keyWindow?.safeAreaInsets ?? .zero
-        }
-        return .zero
-    }
     
     func maxExpandableHeight() -> CGFloat {
-        return view.frame.size.height - safeAreaInsets().top
+        return view.frame.size.height
     }
     
 }
