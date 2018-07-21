@@ -27,7 +27,6 @@ fileprivate let ThresholdProgressFraction: CGFloat = 0.3
 fileprivate let TotalDuration: Double = 0.5
 
 fileprivate let HeaderMinHeight: CGFloat = 44.0
-fileprivate let HeaderMaxHeight: CGFloat = HeaderMinHeight + UIApplication.shared.statusBarFrame.height
 
 
 @objc public protocol ContentSheetDelegate {
@@ -87,6 +86,20 @@ fileprivate enum PanDirection {
 public class ContentSheet: UIViewController {
     
     //MARK: Variables
+
+    //Utility
+    fileprivate var _safeAreaInsets: UIEdgeInsets {
+        if #available(iOS 11.0, *) {
+            return self.view.safeAreaInsets
+        } else {
+            return UIEdgeInsetsMake(UIApplication.shared.statusBarFrame.maxY, 0, 0, 0)
+        }
+    }
+    
+    fileprivate var _headerMaxHeight: CGFloat {
+        return HeaderMinHeight + _safeAreaInsets.top
+    }
+    
     //Content controller object
     //Not necessarilly a view controller
     fileprivate var _content: ContentSheetContentProtocol
@@ -262,6 +275,8 @@ public class ContentSheet: UIViewController {
         header.backgroundColor = UIColor(white: 1.0, alpha: 0.7)
         
         navigationBar.setBackgroundImage(UIImage(), for: .default)
+        navigationBar.barTintColor = UIColor.clear
+        navigationBar.backgroundColor = UIColor.clear
         navigationBar.isTranslucent = true
 
         header.addSubview(navigationBar)
@@ -376,7 +391,7 @@ public class ContentSheet: UIViewController {
                 _contentContainer.addSubview(contentView)
                 
                 //Layout content
-                self.layoutContentSubviews()
+                self._layoutContentSubviews()
                 
                 //Do not expand if no expanded height
                 expandedHeight = max(min(max(_content.expandedHeight?(containedIn: self) ?? 0.0, 0.0), self.view.frame.height), collapsedHeight)
@@ -386,6 +401,7 @@ public class ContentSheet: UIViewController {
                 frame.size.height = collapsedHeight
                 self.transitionCoordinator?.animate(alongsideTransition: { (_) in
                     self._contentContainer.frame = frame
+                    self._layoutContentSubviews()
                 }, completion: nil)
                 
                 //Notify delegate that sheet will show
@@ -517,7 +533,7 @@ public class ContentSheet: UIViewController {
         
         UIView.animate(withDuration: 0.2) {
             self._contentContainer.frame = frame
-            self.layoutContentSubviews()
+            self._layoutContentSubviews()
         }
     }
     
@@ -751,7 +767,7 @@ extension ContentSheet {
                                     let frame = CGRect(x: 0, y: y, width: self._contentContainer.frame.width, height: self.expandedHeight)
                                     self._contentContainer.frame = frame
                                     
-                                    self.layoutContentSubviews()
+                                    self._layoutContentSubviews()
                                     break
                                 case .collapsed:
                                     let frame = CGRect(x: 0, y: totalHeight - self.collapsedHeight, width: self._contentContainer.frame.width, height: self.collapsedHeight)
@@ -778,7 +794,7 @@ extension ContentSheet {
                                         break;
                                     case .collapsed:
                                         strong._scrollviewToObserve?.isScrollEnabled = strong.collapsedHeight < strong.maxExpandableHeight() ? false : true
-                                        strong.layoutContentSubviews()
+                                        strong._layoutContentSubviews()
                                         break;
 //                                    case .minimised:
 //                                        strong._scrollviewToObserve?.isScrollEnabled = false
@@ -791,21 +807,21 @@ extension ContentSheet {
                                 }})
             }
             
-            self.layoutContentSubviews()
+            self._layoutContentSubviews()
         }
     }
     
     
-    fileprivate func layoutContentSubviews() {
+    fileprivate func _layoutContentSubviews() {
         
         if let contentView = self._contentView {
             if self.showDefaultHeader, let header = self.contentHeader {
                 
                 let frame = self._contentContainer.frame
                 
-                if frame.origin.y < UIApplication.shared.statusBarFrame.maxY {
+                if frame.origin.y < _safeAreaInsets.top {
                     
-                    var subviewFrame = CGRect(x: 0, y: 0, width: frame.width, height: min(HeaderMaxHeight, (HeaderMinHeight + (UIApplication.shared.statusBarFrame.maxY - frame.origin.y))))
+                    var subviewFrame = CGRect(x: 0, y: 0, width: frame.width, height: min(_headerMaxHeight, (HeaderMinHeight + (_safeAreaInsets.top - frame.origin.y))))
                     header.frame = subviewFrame
                     
                     subviewFrame.origin.y = subviewFrame.maxY
@@ -835,7 +851,6 @@ extension ContentSheet {
             }
         }
     }
-    
     
     @inline(__always) fileprivate func _possibleStateChange(_ progress: CGFloat) -> ContentSheetState {
         if expandedHeight <= collapsedHeight {
