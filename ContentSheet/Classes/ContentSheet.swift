@@ -952,7 +952,7 @@ extension ContentSheet: UIGestureRecognizerDelegate {
         
         if (collapsedHeight <= expandedHeight)
             &&
-            (((_state == .expanded) && (scrollView.contentOffset.y + scrollView.contentInset.top == 0) && (direction == .down)) || (_state == .collapsed && collapsedHeight < self.maxExpandableHeight())) {
+            (((scrollView.contentOffset.y + scrollView.contentInset.top == 0) && (direction == .down)) || (_state == .collapsed && collapsedHeight < self.maxExpandableHeight())) {
             scrollView.isScrollEnabled = false
         } else {
             scrollView.isScrollEnabled = true
@@ -1116,7 +1116,7 @@ extension UIView: ContentSheetContentProtocol {
 extension ContentSheet {
     
     func maxExpandableHeight() -> CGFloat {
-        return view.frame.size.height
+        return view.frame.size.height - _safeAreaInsets.top
     }
     
 }
