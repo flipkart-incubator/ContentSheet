@@ -15,6 +15,7 @@
 		AD7A21F21733B27D64E61C749359BAE1 /* ContentSheet-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = AA09F92DD67503EBFCEDADD10217634F /* ContentSheet-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		CC2A6383309471492D9C6F4DFC01A497 /* Pods-FKWidgetSheet_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DEC26ABA96B9BD29E0A05A228CA76BF /* Pods-FKWidgetSheet_Example-dummy.m */; };
 		D02DB5ED021820A2134514E39649E089 /* Pods-FKWidgetSheet_Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DC07803810A502F8C4A3DCA35D8EA0D /* Pods-FKWidgetSheet_Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D6E1D891210F57580071AB3B /* ContentHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6E1D890210F57580071AB3B /* ContentHeader.swift */; };
 		E804C377AAAE02045D6F5C2A44A8714A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
 		E9E45DD6AE12BA7F3FFD958A9D3905C4 /* ContentSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96749183CA91A77ECC3FC1FE6F4BD2D0 /* ContentSheet.swift */; };
 		ECDBB091575C52CF0130183BC20F0D01 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
@@ -31,15 +32,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		014B9C66D61D96B863258DD4D3525D67 /* Pods-FKWidgetSheet_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = "Pods-FKWidgetSheet_Example.modulemap"; sourceTree = "<group>"; };
+		014B9C66D61D96B863258DD4D3525D67 /* Pods-FKWidgetSheet_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-FKWidgetSheet_Example.modulemap"; sourceTree = "<group>"; };
 		0AFFA539B9E7C8474F155E61730BCB9B /* Pods-FKWidgetSheet_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-FKWidgetSheet_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		0B0157D116240B1E61F8902CE1261C61 /* Pods-FKWidgetSheet_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-FKWidgetSheet_Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		0C9CB5A5ADE3C360BC77F52F235A6820 /* Pods_FKWidgetSheet_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_FKWidgetSheet_Example.framework; path = "Pods-FKWidgetSheet_Example.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
-		1392EC5D574381AFE0EE2CAFE4321BC8 /* Pods-FKWidgetSheet_Tests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = "Pods-FKWidgetSheet_Tests.modulemap"; sourceTree = "<group>"; };
+		0C9CB5A5ADE3C360BC77F52F235A6820 /* Pods_FKWidgetSheet_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FKWidgetSheet_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1392EC5D574381AFE0EE2CAFE4321BC8 /* Pods-FKWidgetSheet_Tests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-FKWidgetSheet_Tests.modulemap"; sourceTree = "<group>"; };
 		14E47734BF61870FA3D8CBAC77F7F93A /* ContentSheet-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ContentSheet-prefix.pch"; sourceTree = "<group>"; };
 		2C7F243082FB085E0E12A1E2AAF4E02B /* ContentSheet-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ContentSheet-dummy.m"; sourceTree = "<group>"; };
 		417A5F5B64721024ABEC86A3FB37E884 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		491BD8443A611BAC07C164FCF9DA69CE /* ContentSheet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = ContentSheet.framework; path = ContentSheet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		491BD8443A611BAC07C164FCF9DA69CE /* ContentSheet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ContentSheet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4DC07803810A502F8C4A3DCA35D8EA0D /* Pods-FKWidgetSheet_Tests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-FKWidgetSheet_Tests-umbrella.h"; sourceTree = "<group>"; };
 		54281D66BFE7F2C2B2D48A3CFB138496 /* Pods-FKWidgetSheet_Example-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-FKWidgetSheet_Example-acknowledgements.markdown"; sourceTree = "<group>"; };
 		58A236141AAEDE9C15D4E270755C1612 /* Pods-FKWidgetSheet_Tests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-FKWidgetSheet_Tests-acknowledgements.plist"; sourceTree = "<group>"; };
@@ -48,7 +49,7 @@
 		844E8689FD08397A446D04CEEA75C179 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		85808AC741A796653D018DFC0CC45891 /* Pods-FKWidgetSheet_Tests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-FKWidgetSheet_Tests-dummy.m"; sourceTree = "<group>"; };
 		8CB1C7CF4770B07F5EA221CBD91E7FAF /* Pods-FKWidgetSheet_Example-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-FKWidgetSheet_Example-frameworks.sh"; sourceTree = "<group>"; };
-		93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		94C858977D5F5BBF5C7A61874C4EA48D /* ContentSheetTransitionDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ContentSheetTransitionDelegate.swift; sourceTree = "<group>"; };
 		96749183CA91A77ECC3FC1FE6F4BD2D0 /* ContentSheet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ContentSheet.swift; sourceTree = "<group>"; };
 		982AD1565F728953D5726A7BE757F088 /* Pods-FKWidgetSheet_Example-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-FKWidgetSheet_Example-umbrella.h"; sourceTree = "<group>"; };
@@ -57,8 +58,9 @@
 		AA09F92DD67503EBFCEDADD10217634F /* ContentSheet-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ContentSheet-umbrella.h"; sourceTree = "<group>"; };
 		B8D35E6201A20BB1FD9AEB69E873F20C /* ContentSheet.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ContentSheet.xcconfig; sourceTree = "<group>"; };
 		C3CEBBC33D06408352C2590CB6A8241C /* Pods-FKWidgetSheet_Tests-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-FKWidgetSheet_Tests-resources.sh"; sourceTree = "<group>"; };
-		C9F8C33E6786AFC2DA9B2B7F9C8E2817 /* Pods_FKWidgetSheet_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_FKWidgetSheet_Tests.framework; path = "Pods-FKWidgetSheet_Tests.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
-		D5B991D5827C1F9E87CED563ECE8E906 /* ContentSheet.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = ContentSheet.modulemap; sourceTree = "<group>"; };
+		C9F8C33E6786AFC2DA9B2B7F9C8E2817 /* Pods_FKWidgetSheet_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FKWidgetSheet_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D5B991D5827C1F9E87CED563ECE8E906 /* ContentSheet.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = ContentSheet.modulemap; sourceTree = "<group>"; };
+		D6E1D890210F57580071AB3B /* ContentHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentHeader.swift; sourceTree = "<group>"; };
 		D6F9F0B04160E9D2F8D69A03B6DF65E5 /* Pods-FKWidgetSheet_Example-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-FKWidgetSheet_Example-resources.sh"; sourceTree = "<group>"; };
 		E036C13013B6BDC368427B338EE79664 /* Pods-FKWidgetSheet_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-FKWidgetSheet_Example.release.xcconfig"; sourceTree = "<group>"; };
 		E8B39E6F8A5F9A172AC26C7BFDCD62E4 /* Pods-FKWidgetSheet_Tests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-FKWidgetSheet_Tests-acknowledgements.markdown"; sourceTree = "<group>"; };
@@ -178,9 +180,9 @@
 			isa = PBXGroup;
 			children = (
 				96749183CA91A77ECC3FC1FE6F4BD2D0 /* ContentSheet.swift */,
+				D6E1D890210F57580071AB3B /* ContentHeader.swift */,
 				94C858977D5F5BBF5C7A61874C4EA48D /* ContentSheetTransitionDelegate.swift */,
 			);
-			name = Classes;
 			path = Classes;
 			sourceTree = "<group>";
 		};
@@ -197,7 +199,6 @@
 			children = (
 				8BE419B1FDB9D7AF7F820532BD668936 /* Classes */,
 			);
-			name = ContentSheet;
 			path = ContentSheet;
 			sourceTree = "<group>";
 		};
@@ -352,6 +353,7 @@
 			files = (
 				7C0623CCFC5C67BFC27EBFC728C4C9D4 /* ContentSheet-dummy.m in Sources */,
 				E9E45DD6AE12BA7F3FFD958A9D3905C4 /* ContentSheet.swift in Sources */,
+				D6E1D891210F57580071AB3B /* ContentHeader.swift in Sources */,
 				077685F36821B7D4F9878D8EA62FA94B /* ContentSheetTransitionDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
