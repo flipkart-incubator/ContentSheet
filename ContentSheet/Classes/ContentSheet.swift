@@ -245,7 +245,7 @@ public class ContentSheet: UIViewController {
         }
     }
     
-    private var _contentHeader: UIView?
+    private var _contentHeader: ContentHeaderView?
     
     public var contentHeader: UIView? {
         get {
@@ -260,7 +260,7 @@ public class ContentSheet: UIViewController {
     }
     
     
-    private func _defaultHeader() -> UIView {
+    private func _defaultHeader() -> ContentHeaderView {
         
         var frame = self.view.frame
         frame.size.height = 44.0;
@@ -270,7 +270,7 @@ public class ContentSheet: UIViewController {
         
         _navigationBar = navigationBar
         
-        let header = UIView(frame: frame)
+        let header = ContentHeaderView(frame: frame)
         header.tintColor = navigationBar.tintColor
         header.backgroundColor = UIColor(white: 1.0, alpha: 0.7)
         
@@ -281,30 +281,9 @@ public class ContentSheet: UIViewController {
 
         header.addSubview(navigationBar)
         
-        _setBlurrEffect(true, on: header)
-        
         return header
     }
     
-    fileprivate var _blurEffectView: UIVisualEffectView?
-    private func _setBlurrEffect(_ add: Bool, on view: UIView?) {
-        if let onView = view ?? self.contentHeader {
-            if add {
-                let blurEffect = UIBlurEffect(style: .extraLight)
-                _blurEffectView = UIVisualEffectView(effect: blurEffect)
-                if let blurEffectView = _blurEffectView {
-                    blurEffectView.frame = onView.bounds
-                    onView.insertSubview(blurEffectView, at: 0)
-                }
-            } else {
-                onView.alpha = 1
-                if let blurEffectView = _blurEffectView {
-                    blurEffectView.removeFromSuperview()
-                }
-                _blurEffectView = nil
-            }
-        }
-    }
 
     //Gesture
     fileprivate lazy var _panGesture: UIPanGestureRecognizer = {
@@ -594,7 +573,7 @@ public class ContentSheet: UIViewController {
         self._oldCollapsedHeight = self.collapsedHeight
         self._oldExpandedHeight = self.expandedHeight
         
-        let maxHeight = maxExpandableHeight();
+        let maxHeight = expandedHeight;
         
         resetContentSheetHeight(collapsedHeight: min(maxHeight, self._oldCollapsedHeight + keyboardHeight), expandedHeight: min(maxHeight, self._oldExpandedHeight + keyboardHeight))
     }
@@ -656,7 +635,7 @@ public class ContentSheet: UIViewController {
                 keyboardHeight = self._keyboardFrame?.height ?? keyboardHeight
             }
             
-            let maxHeight = maxExpandableHeight();
+            let maxHeight = expandedHeight;
             
             resetContentSheetHeight(collapsedHeight: min(maxHeight, self.collapsedHeight + keyboardHeight), expandedHeight: min(maxHeight, self.expandedHeight + keyboardHeight))
         }
@@ -793,7 +772,7 @@ extension ContentSheet {
                                         strong._scrollviewToObserve?.isScrollEnabled = true
                                         break;
                                     case .collapsed:
-                                        strong._scrollviewToObserve?.isScrollEnabled = strong.collapsedHeight < strong.maxExpandableHeight() ? false : true
+                                        strong._scrollviewToObserve?.isScrollEnabled = strong.collapsedHeight < strong.expandedHeight ? false : true
                                         strong._layoutContentSubviews()
                                         break;
 //                                    case .minimised:
@@ -839,8 +818,7 @@ extension ContentSheet {
                     contentView.frame = subviewFrame
                 }
                 
-                if let navigationBar = self.contentNavigationBar, let blurView = self._blurEffectView {
-                    blurView.frame = header.bounds
+                if let navigationBar = self.contentNavigationBar {
                     navigationBar.frame = CGRect(x: navigationBar.frame.origin.x,
                                                  y: header.bounds.height - navigationBar.frame.height,
                                                  width: navigationBar.frame.width,
@@ -952,7 +930,7 @@ extension ContentSheet: UIGestureRecognizerDelegate {
         
         if (collapsedHeight <= expandedHeight)
             &&
-            (((_state == .expanded) && (scrollView.contentOffset.y + scrollView.contentInset.top == 0) && (direction == .down)) || (_state == .collapsed && collapsedHeight < self.maxExpandableHeight())) {
+            (((scrollView.contentOffset.y + scrollView.contentInset.top == 0) && (direction == .down)) || (_state == .collapsed && collapsedHeight < expandedHeight)) {
             scrollView.isScrollEnabled = false
         } else {
             scrollView.isScrollEnabled = true
@@ -1112,15 +1090,6 @@ extension UIView: ContentSheetContentProtocol {
         return ContentSheet.contentSheet(content: self)
     }
 }
-
-extension ContentSheet {
-    
-    func maxExpandableHeight() -> CGFloat {
-        return view.frame.size.height
-    }
-    
-}
-
 
 extension UIView {
     public var firstResponder: UIView? {
