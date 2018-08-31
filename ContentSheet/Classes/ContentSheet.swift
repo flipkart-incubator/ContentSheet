@@ -375,10 +375,11 @@ public class ContentSheet: UIViewController {
                 //Do not expand if no expanded height
                 expandedHeight = max(min(max(_content.expandedHeight?(containedIn: self) ?? 0.0, 0.0), self.view.frame.height), collapsedHeight)
                 
-                //Animate content
-                frame.origin.y = self.view.bounds.height - collapsedHeight
-                frame.size.height = collapsedHeight
+                
                 self.transitionCoordinator?.animate(alongsideTransition: { (_) in
+                    //Animate content
+                    frame.origin.y = self.view.bounds.height - self.collapsedHeight
+                    frame.size.height = self.collapsedHeight
                     self._contentContainer.frame = frame
                     self._layoutContentSubviews()
                 }, completion: nil)
