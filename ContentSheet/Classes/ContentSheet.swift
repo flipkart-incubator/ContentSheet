@@ -304,6 +304,7 @@ public class ContentSheet: UIViewController {
     public required init(content: ContentSheetContentProtocol) {
         _content = content
         super.init(nibName: nil, bundle: nil)
+        self.modalPresentationStyle = .overFullScreen
     }
     
     //MARK: View lifecycle
@@ -477,14 +478,14 @@ public class ContentSheet: UIViewController {
     
     //Overrides
     //Transition
-    public override var transitioningDelegate: UIViewControllerTransitioningDelegate? {
-        get {
-            return _transitionController
-        }
-        set {
-            fatalError("Attempt to set transition delegate of content sheet, which is a read only property.")
-        }
-    }
+//    public override var transitioningDelegate: UIViewControllerTransitioningDelegate? {
+//        get {
+//            return _transitionController
+//        }
+//        set {
+//            fatalError("Attempt to set transition delegate of content sheet, which is a read only property.")
+//        }
+//    }
     
     //Status bar
     public override var prefersStatusBarHidden: Bool {
