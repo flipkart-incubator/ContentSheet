@@ -131,7 +131,7 @@ Use these properties of content sheet to customize behaviour
 
 ```swift
 public var showDefaultHeader: Bool = true
-public var blurBackground: Bool = true
+public var blurBackground: Bool = false
 public var blurStyle: UIBlurEffectStyle = .dark
 public var dismissOnTouchOutside: Bool = true
 public var backgroundImage: UIImage? 
