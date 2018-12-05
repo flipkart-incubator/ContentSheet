@@ -131,26 +131,6 @@ public class ContentSheet: UIViewController {
         return imageView
     } ()
     
-    private lazy var _overlay: UIView = {
-        let overlay: UIView = UIView(frame: self.view.bounds)
-        overlay.contentMode = .scaleAspectFill
-        overlay.backgroundColor = UIColor(white: 0.0, alpha: 0.7)
-        overlay.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        
-        return overlay
-    } ()
-    
-    private var _blurView: UIVisualEffectView {
-        get {
-            let effect: UIBlurEffect = UIBlurEffect(style: blurStyle)
-            let effectView = UIVisualEffectView(effect: effect)
-            effectView.frame = self.view.bounds
-            effectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            
-            return effectView
-        }
-    }
-    
     //background image
     public var backgroundImage: UIImage? {
         didSet {
@@ -170,17 +150,12 @@ public class ContentSheet: UIViewController {
             let view = backgroundView != nil ? backgroundView! : _defaultBackground
             view.frame = self.view.bounds
             
-            if blurBackground {
-                view.addSubview(_blurView)
-            } else {
-                view.addSubview(_overlay)
-            }
             return view
         }
     }
     
     //Settings
-    public var blurBackground: Bool = true
+    public var blurBackground: Bool = false
     public var blurStyle: UIBlurEffectStyle = .dark
     public var dismissOnTouchOutside: Bool = true
     public var handleKeyboard: Bool = false {
@@ -304,6 +279,7 @@ public class ContentSheet: UIViewController {
     public required init(content: ContentSheetContentProtocol) {
         _content = content
         super.init(nibName: nil, bundle: nil)
+        self.modalPresentationStyle = .custom
     }
     
     //MARK: View lifecycle
