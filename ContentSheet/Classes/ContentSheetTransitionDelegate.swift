@@ -130,6 +130,10 @@ public class ContentSheetTransitionDelegate: NSObject, UIViewControllerTransitio
 }
 
 
+/*
+ TODO: Add support for different kind of presentation transitions.
+ First variation could be to just add direction of sliding in as an option.
+ */
 public class ContentSheetPresentationController: UIPresentationController {
     
     public override func presentationTransitionWillBegin() {
