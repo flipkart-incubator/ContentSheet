@@ -42,23 +42,22 @@ public class ContentSheetAnimator: NSObject, UIViewControllerAnimatedTransitioni
     }
     
     public func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-
+        
         let fromViewController: UIViewController? = transitionContext.viewController(forKey: .from)
         let toViewController: UIViewController? = transitionContext.viewController(forKey: .to)
         
         let fromView: UIView? = transitionContext.view(forKey: .from)
         let toView: UIView? = transitionContext.view(forKey: .to)
         
-        if let fromView = fromView, let toView = toView {
+        let fromViewFrame: CGRect = fromViewController != nil ? transitionContext.initialFrame(for: fromViewController!) : UIScreen.main.bounds
+        let toViewFrame: CGRect = toViewController != nil ? transitionContext.finalFrame(for: toViewController!) : UIScreen.main.bounds
+        
+        if presenting {
             
-            let fromViewFrame: CGRect = fromViewController != nil ? transitionContext.initialFrame(for: fromViewController!) : UIScreen.main.bounds
-            let toViewFrame: CGRect = toViewController != nil ? transitionContext.finalFrame(for: toViewController!) : UIScreen.main.bounds
-            
-            if presenting {
+            if let toView = toView {
                 
                 toView.frame = toViewFrame
                 toView.alpha = 0.0
-                fromView.frame = fromViewFrame
                 
                 transitionContext.containerView.addSubview(toView)
                 
@@ -74,12 +73,12 @@ public class ContentSheetAnimator: NSObject, UIViewControllerAnimatedTransitioni
                                 transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
                 })
                 
-            } else {
+            }
+        } else {
+            
+            if let fromView = fromView {
                 
-                toView.frame = toViewFrame
                 fromView.frame = fromViewFrame
-                
-                transitionContext.containerView.insertSubview(toView, belowSubview: fromView)
                 
                 UIView.animate(withDuration: self.duration,
                                delay: 0.0,
@@ -92,7 +91,6 @@ public class ContentSheetAnimator: NSObject, UIViewControllerAnimatedTransitioni
                                completion: { (finished) in
                                 transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
                 })
-                
             }
         }
     }
@@ -114,28 +112,118 @@ public class ContentSheetTransitionDelegate: NSObject, UIViewControllerTransitio
     }
     
     public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        
-        if let sheet = presented as? ContentSheet {
-            if sheet.backgroundView == nil && sheet.backgroundImage == nil {
-                sheet.backgroundView = presenting.view.snapshotView(afterScreenUpdates: false)
-            }
-        }
-        
         let animator: ContentSheetAnimator = ContentSheetAnimator()
         animator.duration = duration
         return animator
     }
-    
+
     public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         let animator: ContentSheetAnimator = ContentSheetAnimator()
         animator.duration = duration
         animator.presenting = false
         return animator
     }
+    
+    public func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+        return ContentSheetPresentationController(presentedViewController: presented, presenting: presenting)
+    }
 }
 
 
+/*
+ TODO: Add support for different kind of presentation transitions.
+ First variation could be to just add direction of sliding in as an option.
+ */
+public class ContentSheetPresentationController: UIPresentationController {
+    
+    public override func presentationTransitionWillBegin() {
+        if let sheet = self.presentedViewController as? ContentSheet {
+            _overlay = sheet.blurBackground ? _blurView(sheet.blurStyle) : _dimmingView()
+            _overlay!.alpha = 0.0
+            self.containerView?.insertSubview(_overlay!, at: 0)
 
+            guard let coordinator = presentedViewController.transitionCoordinator else {
+                _overlay!.alpha = 1.0
+                return
+            }
+            
+            coordinator.animate(alongsideTransition: { _ in
+                self._overlay!.alpha = 1.0
+            })
+        }
+    }
+
+    public override func presentationTransitionDidEnd(_ completed: Bool) {
+        if !completed {
+            self._overlay?.removeFromSuperview()
+        }
+    }
+
+    public override func dismissalTransitionWillBegin() {
+        if let sheet = self.presentedViewController as? ContentSheet, !sheet.blurBackground {
+            guard let coordinator = presentedViewController.transitionCoordinator else {
+                _overlay!.alpha = 0.0
+                return
+            }
+            
+            coordinator.animate(alongsideTransition: { _ in
+                self._overlay!.alpha = 0.0
+            })
+        }
+    }
+
+    public override func dismissalTransitionDidEnd(_ completed: Bool) {
+        if completed {
+            self._overlay?.removeFromSuperview()
+        } else {
+            self._overlay?.alpha = 1.0
+        }
+    }
+    
+    override public func containerViewWillLayoutSubviews() {
+        presentedView?.frame = frameOfPresentedViewInContainerView
+    }
+    
+    override public func size(forChildContentContainer container: UIContentContainer,
+                       withParentContainerSize parentSize: CGSize) -> CGSize {
+        return parentSize
+    }
+
+    override public var frameOfPresentedViewInContainerView: CGRect {
+        var frame: CGRect = .zero
+        frame.size = size(forChildContentContainer: presentedViewController,
+                          withParentContainerSize: containerView!.bounds.size)
+        return frame
+    }
+
+    
+    private var _overlay: UIView?
+    
+    private func _dimmingView() -> UIView {
+        let dimmingView: UIView = UIView(frame: self.containerView?.bounds ?? self.presentingViewController.view.bounds)
+        dimmingView.contentMode = .scaleAspectFill
+        dimmingView.backgroundColor = UIColor(white: 0.0, alpha: 0.5)
+        dimmingView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+        let recognizer = UITapGestureRecognizer(target: self, action: #selector(_handleTap(recognizer:)))
+        dimmingView.addGestureRecognizer(recognizer)
+
+        return dimmingView
+    }
+    
+    private func _blurView(_ style: UIBlurEffectStyle) -> UIVisualEffectView {
+        let effect: UIBlurEffect = UIBlurEffect(style: style)
+        let effectView = UIVisualEffectView(effect: effect)
+        effectView.frame = self.containerView?.bounds ?? self.presentingViewController.view.bounds
+        effectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+        return effectView
+    }
+
+    private dynamic func _handleTap(recognizer: UITapGestureRecognizer) {
+        presentingViewController.dismiss(animated: true)
+    }
+}
 
 
 
