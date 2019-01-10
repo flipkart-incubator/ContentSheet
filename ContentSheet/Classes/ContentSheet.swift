@@ -646,8 +646,29 @@ extension ContentSheet {
     }
     
     public override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
-        _state = .minimised
-        super.dismiss(animated: flag, completion: completion)
+        if let presentingVC = self.presentingViewController,
+            presentingVC.presentedViewController == self {
+            _state = .minimised
+            super.dismiss(animated: flag, completion: completion)
+        } else {
+            var frame = self.view.frame
+            
+            let progress = self.view.bounds.height - frame.origin.y
+            let duration = (1 - Double(progress))*0.33
+            
+            frame.origin.y = self.view.bounds.height
+
+            UIView.animate(withDuration: duration,
+                           animations: {
+                            self.view.frame = frame
+            }, completion: { [weak self] _ in
+                if let weakSelf = self {
+                    weakSelf.resetContentSheetHeight(collapsedHeight: weakSelf.collapsedHeight, expandedHeight: weakSelf.expandedHeight)
+                    weakSelf.delegate?.contentSheetDidHide?(weakSelf)
+                }
+            })
+
+        }
     }
     
     @objc fileprivate func cancelButtonPressed(_ sender: UIBarButtonItem?) {
