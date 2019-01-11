@@ -211,7 +211,7 @@ public class ContentSheetPresentationController: UIPresentationController {
         return dimmingView
     }
     
-    private func _blurView(_ style: UIBlurEffectStyle) -> UIVisualEffectView {
+    private func _blurView(_ style: UIBlurEffect.Style) -> UIVisualEffectView {
         let effect: UIBlurEffect = UIBlurEffect(style: style)
         let effectView = UIVisualEffectView(effect: effect)
         effectView.frame = self.containerView?.bounds ?? self.presentingViewController.view.bounds
@@ -220,7 +220,7 @@ public class ContentSheetPresentationController: UIPresentationController {
         return effectView
     }
 
-    private dynamic func _handleTap(recognizer: UITapGestureRecognizer) {
+    @objc private dynamic func _handleTap(recognizer: UITapGestureRecognizer) {
         presentingViewController.dismiss(animated: true)
     }
 }

@@ -78,7 +78,7 @@ class ViewController: UIViewController {
         pathAnimation.fromValue = -2.0
         pathAnimation.toValue = 1.0
         pathAnimation.autoreverses = true
-        pathAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
+        pathAnimation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeOut)
         pathAnimation.repeatCount = Float.greatestFiniteMagnitude
         iconLayer.add(pathAnimation, forKey: "strokeStartAnimation")
     }
@@ -88,15 +88,15 @@ class ViewController: UIViewController {
         canPresent = true
         
         a = SecondViewController(nibName: nil, bundle: nil)
-        a?.willMove(toParentViewController: self)
+        a?.willMove(toParent: self)
         a?.view.backgroundColor = UIColor.yellow
-        self.addChildViewController(a!)
+        self.addChild(a!)
         var frame = self.view.bounds.insetBy(dx: 25, dy: 0)
         frame.size.height = 88
         frame.origin.y = self.view.bounds.midY - 44
         a?.view.frame = frame
         self.view.addSubview(a!.view)
-        a?.didMove(toParentViewController: self)
+        a?.didMove(toParent: self)
         
         self.view.backgroundColor = UIColor.purple
         self._animateIcon()

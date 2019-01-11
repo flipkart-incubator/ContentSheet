@@ -92,7 +92,7 @@ public class ContentSheet: UIViewController {
         if #available(iOS 11.0, *) {
             return self.view.safeAreaInsets
         } else {
-            return UIEdgeInsetsMake(UIApplication.shared.statusBarFrame.maxY, 0, 0, 0)
+            return UIEdgeInsets.init(top: UIApplication.shared.statusBarFrame.maxY, left: 0, bottom: 0, right: 0)
         }
     }
     
@@ -156,7 +156,7 @@ public class ContentSheet: UIViewController {
     
     //Settings
     public var blurBackground: Bool = false
-    public var blurStyle: UIBlurEffectStyle = .dark
+    public var blurStyle: UIBlurEffect.Style = .dark
     public var dismissOnTouchOutside: Bool = true
     public var handleKeyboard: Bool = false {
         didSet {
@@ -496,37 +496,37 @@ public class ContentSheet: UIViewController {
     fileprivate func _startObservingKeyboard() {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(_keyboardWillAppear(_:)),
-                                               name: NSNotification.Name.UIKeyboardWillShow,
+                                               name: UIResponder.keyboardWillShowNotification,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(_keyboardWillDisappear(_:)),
-                                               name: NSNotification.Name.UIKeyboardWillHide,
+                                               name: UIResponder.keyboardWillHideNotification,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(_keyboardDidAppear(_:)),
-                                               name: NSNotification.Name.UIKeyboardDidShow,
+                                               name: UIResponder.keyboardDidShowNotification,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(_keyboardDidDisappear(_:)),
-                                               name: NSNotification.Name.UIKeyboardDidHide,
+                                               name: UIResponder.keyboardDidHideNotification,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(_keyboardWillChangeFrame(_:)),
-                                               name: NSNotification.Name.UIKeyboardWillChangeFrame,
+                                               name: UIResponder.keyboardWillChangeFrameNotification,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(_keyboardDidChangeFrame(_:)),
-                                               name: NSNotification.Name.UIKeyboardDidChangeFrame,
+                                               name: UIResponder.keyboardDidChangeFrameNotification,
                                                object: nil)
     }
     
     fileprivate func _stopObservingKeyboard() {
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardDidShow, object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardDidHide, object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillChangeFrame, object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardDidChangeFrame, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidHideNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidChangeFrameNotification, object: nil)
     }
     
     @objc private func _keyboardWillAppear(_ notification: Notification) {
@@ -538,12 +538,12 @@ public class ContentSheet: UIViewController {
         if let userInfo = notification.userInfo {
             var localKeyboard = true
             if #available(iOS 9.0, *) {
-                localKeyboard = userInfo[UIKeyboardIsLocalUserInfoKey] as? Bool ?? self._keyboardPresent
+                localKeyboard = userInfo[UIResponder.keyboardIsLocalUserInfoKey] as? Bool ?? self._keyboardPresent
             }
             if !localKeyboard {
                 return
             }
-            self._keyboardFrame = (userInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue ?? CGRect(x: 0, y: 0, width: self.view.frame.width, height: keyboardHeight)
+            self._keyboardFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue ?? CGRect(x: 0, y: 0, width: self.view.frame.width, height: keyboardHeight)
             keyboardHeight = self._keyboardFrame?.height ?? keyboardHeight
         }
         
@@ -563,7 +563,7 @@ public class ContentSheet: UIViewController {
         if let userInfo = notification.userInfo, let keyboardFrame = self._keyboardFrame {
             self._keyboardPresent = true
             if #available(iOS 9.0, *) {
-                self._keyboardPresent = userInfo[UIKeyboardIsLocalUserInfoKey] as? Bool ?? self._keyboardPresent
+                self._keyboardPresent = userInfo[UIResponder.keyboardIsLocalUserInfoKey] as? Bool ?? self._keyboardPresent
             }
             if !self._keyboardPresent {
                 return
@@ -608,7 +608,7 @@ public class ContentSheet: UIViewController {
             
             var keyboardHeight: CGFloat = 250
             if let userInfo = notification.userInfo {
-                self._keyboardFrame = (userInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue ?? CGRect(x: 0, y: 0, width: self.view.frame.width, height: keyboardHeight)
+                self._keyboardFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue ?? CGRect(x: 0, y: 0, width: self.view.frame.width, height: keyboardHeight)
                 keyboardHeight = self._keyboardFrame?.height ?? keyboardHeight
             }
             
@@ -637,8 +637,8 @@ public class ContentSheet: UIViewController {
 
 extension ContentSheet {
     
-    public override func willMove(toParentViewController parent: UIViewController?) {
-        super.willMove(toParentViewController: parent)
+    public override func willMove(toParent parent: UIViewController?) {
+        super.willMove(toParent: parent)
         
         if parent is UINavigationController {
             fatalError("Attempt to push content sheet inside a navigation controller. content sheet can only be presented.")
@@ -741,7 +741,7 @@ extension ContentSheet {
                                     strong._state = finalState
                                     
                                     if let bar = strong.contentHeader {
-                                        strong._contentContainer.bringSubview(toFront: bar)
+                                        strong._contentContainer.bringSubviewToFront(bar)
                                     }
                                     
                                     switch finalState {
@@ -961,25 +961,25 @@ extension UIViewController: ContentSheetContentProtocol {
     
     //MARK: ContentSheetContentProtocol
     open func contentSheetWillAddContent(_ sheet: ContentSheet) {
-        self.willMove(toParentViewController: sheet)
-        sheet.addChildViewController(self)
+        self.willMove(toParent: sheet)
+        sheet.addChild(self)
         //        self.beginAppearanceTransition(true, animated: true)
     }
     
     open func contentSheetDidAddContent(_ sheet: ContentSheet) {
         //        self.endAppearanceTransition()
-        self.didMove(toParentViewController: sheet)
+        self.didMove(toParent: sheet)
     }
     
     open func contentSheetWillRemoveContent(_ sheet: ContentSheet) {
-        self.willMove(toParentViewController: nil)
-        self.removeFromParentViewController()
+        self.willMove(toParent: nil)
+        self.removeFromParent()
         //        self.beginAppearanceTransition(false, animated: true)
     }
     
     open func contentSheetDidRemoveContent(_ sheet: ContentSheet) {
         //        self.endAppearanceTransition()
-        self.didMove(toParentViewController: nil)
+        self.didMove(toParent: nil)
     }
     
     open func collapsedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
