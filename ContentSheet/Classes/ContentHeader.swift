@@ -32,7 +32,7 @@ public class ContentHeaderView: UIView {
     private func _setBlurrEffect(_ add: Bool) {
         let onView = self
         if add {
-            let blurEffectStyle: UIBlurEffectStyle
+            let blurEffectStyle: UIBlurEffect.Style
             if #available(iOS 10.0, *) {
                 blurEffectStyle = .regular
             } else {
