@@ -637,7 +637,7 @@ fileprivate enum PanDirection {
 
 extension ContentSheet {
     
-    @objc public override func willMove(toParent parent: UIViewController?) {
+   @objc public override func willMove(toParent parent: UIViewController?) {
         super.willMove(toParent: parent)
         
         if parent is UINavigationController {
