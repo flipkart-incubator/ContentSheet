@@ -22,10 +22,10 @@ import Foundation
 import UIKit
 
 
-public class ContentSheetAnimator: NSObject, UIViewControllerAnimatedTransitioning {
+@objc public class ContentSheetAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     
     private var _duration: TimeInterval = 0.357
-    public var duration: TimeInterval {
+    @objc public var duration: TimeInterval {
         get {
             return _duration
         }
@@ -35,13 +35,13 @@ public class ContentSheetAnimator: NSObject, UIViewControllerAnimatedTransitioni
             }
         }
     }
-    public var presenting: Bool = true
+    @objc public var presenting: Bool = true
     
-    public func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
+    @objc public func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return duration
     }
     
-    public func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
+    @objc public func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         
         let fromViewController: UIViewController? = transitionContext.viewController(forKey: .from)
         let toViewController: UIViewController? = transitionContext.viewController(forKey: .to)
@@ -97,10 +97,10 @@ public class ContentSheetAnimator: NSObject, UIViewControllerAnimatedTransitioni
 }
 
 
-public class ContentSheetTransitionDelegate: NSObject, UIViewControllerTransitioningDelegate {
+@objc public class ContentSheetTransitionDelegate: NSObject, UIViewControllerTransitioningDelegate {
     
     private var _duration: TimeInterval = 0.357
-    public var duration: TimeInterval {
+    @objc public var duration: TimeInterval {
         get {
             return _duration
         }
@@ -111,20 +111,20 @@ public class ContentSheetTransitionDelegate: NSObject, UIViewControllerTransitio
         }
     }
     
-    public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    @objc public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         let animator: ContentSheetAnimator = ContentSheetAnimator()
         animator.duration = duration
         return animator
     }
 
-    public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    @objc public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         let animator: ContentSheetAnimator = ContentSheetAnimator()
         animator.duration = duration
         animator.presenting = false
         return animator
     }
     
-    public func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+    @objc public func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
         return ContentSheetPresentationController(presentedViewController: presented, presenting: presenting)
     }
 }
@@ -134,9 +134,9 @@ public class ContentSheetTransitionDelegate: NSObject, UIViewControllerTransitio
  TODO: Add support for different kind of presentation transitions.
  First variation could be to just add direction of sliding in as an option.
  */
-public class ContentSheetPresentationController: UIPresentationController {
+@objc public class ContentSheetPresentationController: UIPresentationController {
     
-    public override func presentationTransitionWillBegin() {
+    @objc public override func presentationTransitionWillBegin() {
         if let sheet = self.presentedViewController as? ContentSheet {
             _overlay = sheet.blurBackground ? _blurView(sheet.blurStyle) : _dimmingView()
             _overlay!.alpha = 0.0
@@ -153,13 +153,13 @@ public class ContentSheetPresentationController: UIPresentationController {
         }
     }
 
-    public override func presentationTransitionDidEnd(_ completed: Bool) {
+    @objc public override func presentationTransitionDidEnd(_ completed: Bool) {
         if !completed {
             self._overlay?.removeFromSuperview()
         }
     }
 
-    public override func dismissalTransitionWillBegin() {
+    @objc public override func dismissalTransitionWillBegin() {
         if let sheet = self.presentedViewController as? ContentSheet, !sheet.blurBackground {
             guard let coordinator = presentedViewController.transitionCoordinator else {
                 _overlay!.alpha = 0.0
@@ -172,7 +172,7 @@ public class ContentSheetPresentationController: UIPresentationController {
         }
     }
 
-    public override func dismissalTransitionDidEnd(_ completed: Bool) {
+    @objc public override func dismissalTransitionDidEnd(_ completed: Bool) {
         if completed {
             self._overlay?.removeFromSuperview()
         } else {
@@ -180,16 +180,16 @@ public class ContentSheetPresentationController: UIPresentationController {
         }
     }
     
-    override public func containerViewWillLayoutSubviews() {
+    @objc override public func containerViewWillLayoutSubviews() {
         presentedView?.frame = frameOfPresentedViewInContainerView
     }
     
-    override public func size(forChildContentContainer container: UIContentContainer,
+    @objc override public func size(forChildContentContainer container: UIContentContainer,
                        withParentContainerSize parentSize: CGSize) -> CGSize {
         return parentSize
     }
 
-    override public var frameOfPresentedViewInContainerView: CGRect {
+    @objc override public var frameOfPresentedViewInContainerView: CGRect {
         var frame: CGRect = .zero
         frame.size = size(forChildContentContainer: presentedViewController,
                           withParentContainerSize: containerView!.bounds.size)

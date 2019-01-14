@@ -23,7 +23,7 @@ import ContentSheet
 
 class SecondViewController: UIViewController {
 
-    @IBOutlet public weak var table: UITableView!
+    @IBOutlet @objc public weak var table: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -67,11 +67,11 @@ class SecondViewController: UIViewController {
     }
     
     
-    override open func collapsedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
+    @objc override open func collapsedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
         return UIScreen.main.bounds.height*0.5
     }
     
-    override open func expandedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
+    @objc override open func expandedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
         return UIScreen.main.bounds.height
     }
     
