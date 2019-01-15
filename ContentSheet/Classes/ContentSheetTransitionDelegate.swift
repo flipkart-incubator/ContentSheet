@@ -136,7 +136,7 @@ import UIKit
  */
 @objc public class ContentSheetPresentationController: UIPresentationController {
     
-    @objc public override func presentationTransitionWillBegin() {
+    public override func presentationTransitionWillBegin() {
         if let sheet = self.presentedViewController as? ContentSheet {
             _overlay = sheet.blurBackground ? _blurView(sheet.blurStyle) : _dimmingView()
             _overlay!.alpha = 0.0
@@ -153,13 +153,13 @@ import UIKit
         }
     }
 
-    @objc public override func presentationTransitionDidEnd(_ completed: Bool) {
+    public override func presentationTransitionDidEnd(_ completed: Bool) {
         if !completed {
             self._overlay?.removeFromSuperview()
         }
     }
 
-    @objc public override func dismissalTransitionWillBegin() {
+    public override func dismissalTransitionWillBegin() {
         if let sheet = self.presentedViewController as? ContentSheet, !sheet.blurBackground {
             guard let coordinator = presentedViewController.transitionCoordinator else {
                 _overlay!.alpha = 0.0
@@ -172,7 +172,7 @@ import UIKit
         }
     }
 
-    @objc public override func dismissalTransitionDidEnd(_ completed: Bool) {
+    public override func dismissalTransitionDidEnd(_ completed: Bool) {
         if completed {
             self._overlay?.removeFromSuperview()
         } else {
@@ -180,11 +180,11 @@ import UIKit
         }
     }
     
-    @objc override public func containerViewWillLayoutSubviews() {
+    override public func containerViewWillLayoutSubviews() {
         presentedView?.frame = frameOfPresentedViewInContainerView
     }
     
-    @objc override public func size(forChildContentContainer container: UIContentContainer,
+    override public func size(forChildContentContainer container: UIContentContainer,
                        withParentContainerSize parentSize: CGSize) -> CGSize {
         return parentSize
     }

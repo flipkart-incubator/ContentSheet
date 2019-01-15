@@ -283,7 +283,7 @@ fileprivate enum PanDirection {
     }
     
     //MARK: View lifecycle
-    @objc public override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         
         //Load content view
@@ -313,13 +313,13 @@ fileprivate enum PanDirection {
         self.view.backgroundColor = UIColor.clear
     }
     
-    @objc public override func didReceiveMemoryWarning() {
+    public override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
     
-    @objc override public func viewWillAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         if _state == .minimised {
@@ -374,7 +374,7 @@ fileprivate enum PanDirection {
         }
     }
     
-    @objc override public func viewDidAppear(_ animated: Bool) {
+    override public func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         if _state == .minimised {
@@ -397,7 +397,7 @@ fileprivate enum PanDirection {
         delegate?.contentSheetDidAppear?(self)
     }
     
-    @objc override public func viewWillDisappear(_ animated: Bool) {
+    override public func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
         if _state == .minimised {
@@ -427,7 +427,7 @@ fileprivate enum PanDirection {
         }
     }
     
-    @objc override public func viewDidDisappear(_ animated: Bool) {
+    override public func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
         if _state == .minimised {
@@ -637,7 +637,7 @@ fileprivate enum PanDirection {
 
 extension ContentSheet {
     
-   @objc public override func willMove(toParent parent: UIViewController?) {
+   public override func willMove(toParent parent: UIViewController?) {
         super.willMove(toParent: parent)
         
         if parent is UINavigationController {
@@ -645,7 +645,7 @@ extension ContentSheet {
         }
     }
     
-    @objc public override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+    public override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
         _state = .minimised
         super.dismiss(animated: flag, completion: completion)
     }
@@ -849,7 +849,7 @@ extension ContentSheet {
     }
     
     //Touches
-    @objc public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
         if dismissOnTouchOutside {
             let touch =  touches.first
@@ -960,50 +960,50 @@ extension UIViewController: ContentSheetContentProtocol {
     }
     
     //MARK: ContentSheetContentProtocol
-    @objc open func contentSheetWillAddContent(_ sheet: ContentSheet) {
+    open func contentSheetWillAddContent(_ sheet: ContentSheet) {
         self.willMove(toParent: sheet)
         sheet.addChild(self)
         //        self.beginAppearanceTransition(true, animated: true)
     }
     
-    @objc open func contentSheetDidAddContent(_ sheet: ContentSheet) {
+    open func contentSheetDidAddContent(_ sheet: ContentSheet) {
         //        self.endAppearanceTransition()
         self.didMove(toParent: sheet)
     }
     
-    @objc open func contentSheetWillRemoveContent(_ sheet: ContentSheet) {
+    open func contentSheetWillRemoveContent(_ sheet: ContentSheet) {
         self.willMove(toParent: nil)
         self.removeFromParent()
         //        self.beginAppearanceTransition(false, animated: true)
     }
     
-    @objc open func contentSheetDidRemoveContent(_ sheet: ContentSheet) {
+    open func contentSheetDidRemoveContent(_ sheet: ContentSheet) {
         //        self.endAppearanceTransition()
         self.didMove(toParent: nil)
     }
     
-    @objc open func collapsedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
+    open func collapsedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
         return UIScreen.main.bounds.height*0.5
     }
 
-    @objc open func prefersStatusBarHidden(contentSheet: ContentSheet) -> Bool {
+    open func prefersStatusBarHidden(contentSheet: ContentSheet) -> Bool {
         return false
     }
     
-    @objc open func preferredStatusBarStyle(contentSheet: ContentSheet) -> UIStatusBarStyle {
+    open func preferredStatusBarStyle(contentSheet: ContentSheet) -> UIStatusBarStyle {
         return .default
     }
     
-    @objc open func preferredStatusBarUpdateAnimation(contentSheet: ContentSheet) -> UIStatusBarAnimation {
+    open func preferredStatusBarUpdateAnimation(contentSheet: ContentSheet) -> UIStatusBarAnimation {
         return .fade
     }
     
     //Returning the same height as collapsed height by default
-    @objc open func expandedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
+    open func expandedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
         return self.collapsedHeight(containedIn: contentSheet)
     }
     
-    @objc open func scrollViewToObserve(containedIn contentSheet: ContentSheet) -> UIScrollView? {
+    open func scrollViewToObserve(containedIn contentSheet: ContentSheet) -> UIScrollView? {
         return nil
     }
     
