@@ -27,7 +27,7 @@ class CustomView: UIView {
     
     //MARK: ContentSheetContentProtocol
     //Optional
-    public func preferredStatusBarStyle(contentSheet: ContentSheet) -> UIStatusBarStyle {
+    @objc public func preferredStatusBarStyle(contentSheet: ContentSheet) -> UIStatusBarStyle {
         return .lightContent
     }
     

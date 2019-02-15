@@ -83,7 +83,7 @@ fileprivate enum PanDirection {
 
 
 
-public class ContentSheet: UIViewController {
+@objc public class ContentSheet: UIViewController {
     
     //MARK: Variables
 
@@ -103,7 +103,7 @@ public class ContentSheet: UIViewController {
     //Content controller object
     //Not necessarilly a view controller
     fileprivate var _content: ContentSheetContentProtocol
-    public var content: ContentSheetContentProtocol {
+    @objc public var content: ContentSheetContentProtocol {
         get {
             return _content
         }
@@ -132,14 +132,14 @@ public class ContentSheet: UIViewController {
     } ()
     
     //background image
-    public var backgroundImage: UIImage? {
+    @objc public var backgroundImage: UIImage? {
         didSet {
             _defaultBackground.image = backgroundImage
         }
     }
     
     //background view, can be provided by host or will use the default background
-    public var backgroundView: UIView? {
+    @objc public var backgroundView: UIView? {
         didSet {
             backgroundView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         }
@@ -155,10 +155,10 @@ public class ContentSheet: UIViewController {
     }
     
     //Settings
-    public var blurBackground: Bool = false
-    public var blurStyle: UIBlurEffect.Style = .dark
-    public var dismissOnTouchOutside: Bool = true
-    public var handleKeyboard: Bool = false {
+    @objc public var blurBackground: Bool = false
+    @objc public var blurStyle: UIBlurEffect.Style = .dark
+    @objc public var dismissOnTouchOutside: Bool = true
+    @objc public var handleKeyboard: Bool = false {
         didSet {
             self._stopObservingKeyboard()
             if handleKeyboard {
@@ -166,7 +166,7 @@ public class ContentSheet: UIViewController {
             }
         }
     }
-    public var enablePanGesture: Bool = true {
+    @objc public var enablePanGesture: Bool = true {
         didSet {
             self._panGesture.isEnabled = enablePanGesture
         }
@@ -185,7 +185,7 @@ public class ContentSheet: UIViewController {
     fileprivate var _oldScrollInsets: UIEdgeInsets?
 
     //Rotation
-    public override var shouldAutorotate: Bool {
+    @objc public override var shouldAutorotate: Bool {
         get {
             return false
         }
@@ -193,7 +193,7 @@ public class ContentSheet: UIViewController {
     
     //State
     fileprivate var _state: ContentSheetState = .minimised
-    public var state: ContentSheetState {
+    @objc public var state: ContentSheetState {
         get {
             return _state
         }
@@ -207,14 +207,14 @@ public class ContentSheet: UIViewController {
     } ()
 
     //Delegate
-    public weak var delegate: ContentSheetDelegate?
+    @objc public weak var delegate: ContentSheetDelegate?
     
     //Header
-    public var showDefaultHeader: Bool = true
+    @objc public var showDefaultHeader: Bool = true
     
     private var _navigationBar: UINavigationBar?
     
-    public var contentNavigationBar: UINavigationBar? {
+    @objc public var contentNavigationBar: UINavigationBar? {
         get {
             return _navigationBar
         }
@@ -222,13 +222,13 @@ public class ContentSheet: UIViewController {
     
     private var _contentHeader: ContentHeaderView?
     
-    public var contentHeader: UIView? {
+    @objc public var contentHeader: UIView? {
         get {
             return _contentHeader
         }
     }
     
-    public var contentNavigationItem: UINavigationItem? {
+    @objc public var contentNavigationItem: UINavigationItem? {
         get {
             return _navigationBar?.items?.last
         }
@@ -270,13 +270,13 @@ public class ContentSheet: UIViewController {
     
     //MARK: Initializers
     //Not implementing required initializer
-    public required init?(coder aDecoder: NSCoder) {
+    @objc public required init?(coder aDecoder: NSCoder) {
         fatalError("init?(coder aDecoder: NSCoder) not implemented.")
     }
     
     // required initializer
     // content controller is non-optional
-    public required init(content: ContentSheetContentProtocol) {
+    @objc public required init(content: ContentSheetContentProtocol) {
         _content = content
         super.init(nibName: nil, bundle: nil)
         self.modalPresentationStyle = .custom
@@ -453,7 +453,7 @@ public class ContentSheet: UIViewController {
     
     //Overrides
     //Transition
-    public override var transitioningDelegate: UIViewControllerTransitioningDelegate? {
+    @objc public override var transitioningDelegate: UIViewControllerTransitioningDelegate? {
         get {
             return _transitionController
         }
@@ -463,25 +463,25 @@ public class ContentSheet: UIViewController {
     }
     
     //Status bar
-    public override var prefersStatusBarHidden: Bool {
+    @objc public override var prefersStatusBarHidden: Bool {
         get {
             return self.content.prefersStatusBarHidden?(contentSheet: self) ?? false
         }
     }
     
-    public override var preferredStatusBarStyle: UIStatusBarStyle {
+    @objc public override var preferredStatusBarStyle: UIStatusBarStyle {
         get {
             return self.content.preferredStatusBarStyle?(contentSheet: self) ?? .default
         }
     }
     
-    public override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+    @objc public override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
         get {
             return self.content.preferredStatusBarUpdateAnimation?(contentSheet: self) ?? .fade
         }
     }
     
-    public func resetContentSheetHeight(collapsedHeight: CGFloat, expandedHeight: CGFloat) {
+    @objc public func resetContentSheetHeight(collapsedHeight: CGFloat, expandedHeight: CGFloat) {
         self.collapsedHeight = collapsedHeight
         self.expandedHeight = expandedHeight
         
@@ -637,7 +637,7 @@ public class ContentSheet: UIViewController {
 
 extension ContentSheet {
     
-    public override func willMove(toParent parent: UIViewController?) {
+   public override func willMove(toParent parent: UIViewController?) {
         super.willMove(toParent: parent)
         
         if parent is UINavigationController {
@@ -873,7 +873,7 @@ extension ContentSheet {
 
 extension ContentSheet: UIGestureRecognizerDelegate {
     
-    public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+    @objc public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if gestureRecognizer == _panGesture {
             return collapsedHeight <= expandedHeight
         }
@@ -881,7 +881,7 @@ extension ContentSheet: UIGestureRecognizerDelegate {
     }
     
     
-    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    @objc public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         
         /*
          Need to figure out a way to check if the visible view controller has changed,
@@ -921,7 +921,7 @@ extension ContentSheet: UIGestureRecognizerDelegate {
 
 //Convenience
 extension ContentSheet {
-    public static func contentSheet(content: ContentSheetContentProtocol) -> ContentSheet? {
+    @objc public static func contentSheet(content: ContentSheetContentProtocol) -> ContentSheet? {
         var responder: UIResponder? = content.view
         while responder != nil {
             if responder is ContentSheet {
@@ -938,7 +938,7 @@ extension ContentSheet {
 //UIBarPositioningDelegate
 extension ContentSheet: UINavigationBarDelegate {
     
-    public func position(for bar: UIBarPositioning) -> UIBarPosition {
+    @objc public func position(for bar: UIBarPositioning) -> UIBarPosition {
         return .top
     }
 }
@@ -951,11 +951,11 @@ extension ContentSheet: UINavigationBarDelegate {
 extension UIViewController: ContentSheetContentProtocol {
     
     //MARK: Utility
-    public func contentSheet() -> ContentSheet? {
+    @objc public func contentSheet() -> ContentSheet? {
         return ContentSheet.contentSheet(content: self)
     }
     
-    public func cs_navigationBar() -> UINavigationBar? {
+    @objc public func cs_navigationBar() -> UINavigationBar? {
         return self.navigationController != nil ? self.navigationController?.navigationBar : self.contentSheet()?.contentNavigationBar
     }
     
@@ -1008,13 +1008,13 @@ extension UIViewController: ContentSheetContentProtocol {
     }
     
     //MARK: Presentation
-    open func present(inContentSheet content: ContentSheetContentProtocol, animated flag: Bool, completion: (() -> Swift.Void)? = nil) {
+    @objc open func present(inContentSheet content: ContentSheetContentProtocol, animated flag: Bool, completion: (() -> Swift.Void)? = nil) {
         
         let contentSheet = ContentSheet(content: content)
         self.present(contentSheet, animated: true, completion: completion)
     }
     
-    open func dismissContentSheet(animated flag: Bool, completion: (() -> Swift.Void)? = nil) {
+    @objc open func dismissContentSheet(animated flag: Bool, completion: (() -> Swift.Void)? = nil) {
         self.contentSheet()?.dismiss(animated: true, completion: completion)
     }
 }
@@ -1022,28 +1022,28 @@ extension UIViewController: ContentSheetContentProtocol {
 
 extension UINavigationController {
     
-    open override func collapsedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
+    @objc open override func collapsedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
         return self.visibleViewController?.collapsedHeight(containedIn: contentSheet) ?? UIScreen.main.bounds.height*0.5
     }
     
     //Returning the same height as collapsed height by default
-    open override func expandedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
+    @objc open override func expandedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
         return self.visibleViewController?.expandedHeight(containedIn: contentSheet) ?? self.collapsedHeight(containedIn: contentSheet)
     }
     
-    open override func scrollViewToObserve(containedIn contentSheet: ContentSheet) -> UIScrollView? {
+    @objc open override func scrollViewToObserve(containedIn contentSheet: ContentSheet) -> UIScrollView? {
         return self.visibleViewController?.scrollViewToObserve(containedIn: contentSheet)
     }
     
-    open override func prefersStatusBarHidden(contentSheet: ContentSheet) -> Bool {
+    @objc open override func prefersStatusBarHidden(contentSheet: ContentSheet) -> Bool {
         return self.visibleViewController?.prefersStatusBarHidden(contentSheet: contentSheet) ?? false
     }
     
-    open override func preferredStatusBarStyle(contentSheet: ContentSheet) -> UIStatusBarStyle {
+    @objc open override func preferredStatusBarStyle(contentSheet: ContentSheet) -> UIStatusBarStyle {
         return self.visibleViewController?.preferredStatusBarStyle(contentSheet: contentSheet) ?? .default
     }
     
-    open override func preferredStatusBarUpdateAnimation(contentSheet: ContentSheet) -> UIStatusBarAnimation {
+    @objc open override func preferredStatusBarUpdateAnimation(contentSheet: ContentSheet) -> UIStatusBarAnimation {
         return self.visibleViewController?.preferredStatusBarUpdateAnimation(contentSheet: contentSheet) ?? .fade
     }
 }
@@ -1051,25 +1051,25 @@ extension UINavigationController {
 
 extension UIView: ContentSheetContentProtocol {
     
-    open var view: UIView! {
+    @objc open var view: UIView! {
         get {
             return self
         }
     }
     
     //MARK: Presentation
-    open func dismissContentSheet(animated flag: Bool, completion: (() -> Swift.Void)? = nil) {
+    @objc open func dismissContentSheet(animated flag: Bool, completion: (() -> Swift.Void)? = nil) {
         self.contentSheet()?.dismiss(animated: true, completion: completion)
     }
     
     //MARK: Utility
-    public func contentSheet() -> ContentSheet? {
+    @objc public func contentSheet() -> ContentSheet? {
         return ContentSheet.contentSheet(content: self)
     }
 }
 
 extension UIView {
-    public var firstResponder: UIView? {
+    @objc public var firstResponder: UIView? {
         guard !isFirstResponder else { return self }
         
         for subview in subviews {
