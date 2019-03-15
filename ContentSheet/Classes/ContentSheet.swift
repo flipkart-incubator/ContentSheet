@@ -210,7 +210,32 @@ fileprivate enum PanDirection {
     @objc public weak var delegate: ContentSheetDelegate?
     
     //Header
-    @objc public var showDefaultHeader: Bool = true
+    @objc public var showDefaultHeader: Bool = true {
+        didSet {
+            if showDefaultHeader {
+                self._contentHeader = _defaultHeader()
+                
+                let navigationItem: UINavigationItem
+                
+                if let item = self.content.navigationItem {
+                    navigationItem = item
+                } else {
+                    navigationItem = UINavigationItem()
+                }
+                
+                if navigationItem.leftBarButtonItem == nil {
+                    let cancelButton = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(cancelButtonPressed(_:)))
+                    navigationItem.leftBarButtonItem = cancelButton
+                }
+                
+                self._navigationBar!.items = [navigationItem]
+            } else {
+                self._contentHeader?.removeFromSuperview()
+                self._contentHeader = nil
+                self._navigationBar = nil
+            }
+        }
+    }
     
     private var _navigationBar: UINavigationBar?
     
@@ -289,26 +314,6 @@ fileprivate enum PanDirection {
         //Load content view
         if let contentView = _content.view {
             _contentView = contentView
-            
-            if showDefaultHeader {
-                
-                self._contentHeader = _defaultHeader()
-                
-                let navigationItem: UINavigationItem
-                
-                if let item = self.content.navigationItem {
-                    navigationItem = item
-                } else {
-                    navigationItem = UINavigationItem()
-                }
-                
-                if navigationItem.leftBarButtonItem == nil {
-                    let cancelButton = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(cancelButtonPressed(_:)))
-                    navigationItem.leftBarButtonItem = cancelButton
-                }
-                
-                self._navigationBar!.items = [navigationItem]
-            }
         }
         self.view.backgroundColor = UIColor.clear
     }
