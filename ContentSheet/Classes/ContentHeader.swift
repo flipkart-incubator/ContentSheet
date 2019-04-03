@@ -5,19 +5,19 @@
 //  Created by Naveen Chaudhary on 30/07/18.
 //
 
-public class ContentHeaderView: UIView {
+@objc public class ContentHeaderView: UIView {
     
-    public override init(frame: CGRect) {
+    @objc public override init(frame: CGRect) {
         super.init(frame: frame)
         self.isTranslucent = true
     }
     
-    public required init?(coder aDecoder: NSCoder) {
+    @objc public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         self.isTranslucent = true
     }
     
-    public var isTranslucent: Bool = true {
+    @objc public var isTranslucent: Bool = true {
         didSet {
             if isTranslucent {
                 self._setBlurrEffect(true)
@@ -32,7 +32,7 @@ public class ContentHeaderView: UIView {
     private func _setBlurrEffect(_ add: Bool) {
         let onView = self
         if add {
-            let blurEffectStyle: UIBlurEffectStyle
+            let blurEffectStyle: UIBlurEffect.Style
             if #available(iOS 10.0, *) {
                 blurEffectStyle = .regular
             } else {
