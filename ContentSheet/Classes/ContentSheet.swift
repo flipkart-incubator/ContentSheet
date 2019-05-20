@@ -103,6 +103,7 @@ fileprivate enum PanDirection {
     //Content controller object
     //Not necessarilly a view controller
     fileprivate var _content: ContentSheetContentProtocol
+    fileprivate var _asPopUp: Bool = false
     @objc public var content: ContentSheetContentProtocol {
         get {
             return _content
@@ -282,6 +283,13 @@ fileprivate enum PanDirection {
         self.modalPresentationStyle = .custom
     }
     
+    @objc public required init(content: ContentSheetContentProtocol, asPopUp: Bool) {
+        _content = content
+        _asPopUp = asPopUp
+        super.init(nibName: nil, bundle: nil)
+        self.modalPresentationStyle = .custom
+    }
+    
     //MARK: View lifecycle
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -334,6 +342,9 @@ fileprivate enum PanDirection {
                 var frame = CGRect(x: 0, y: self.view.bounds.height, width: self.view.bounds.width, height: collapsedHeight)
                 _contentContainer.frame = frame
                 
+                if _asPopUp {
+                    frame = CGRect(x: 10, y: (self.view.frame.height - self.collapsedHeight)/2, width: self._contentContainer.frame.width - 20, height: self.collapsedHeight)
+                }
                 if let header = self.contentHeader {
                     _contentContainer.addSubview(header)
                 }
@@ -354,7 +365,11 @@ fileprivate enum PanDirection {
                 
                 self.transitionCoordinator?.animate(alongsideTransition: { (_) in
                     //Animate content
-                    frame.origin.y = self.view.bounds.height - self.collapsedHeight
+                    if self._asPopUp {
+                        frame.origin.y = (self.view.bounds.height - self.collapsedHeight)/2
+                    } else {
+                        frame.origin.y = self.view.bounds.height - self.collapsedHeight
+                    }
                     frame.size.height = self.collapsedHeight
                     self._contentContainer.frame = frame
                     self._layoutContentSubviews()
@@ -485,7 +500,11 @@ fileprivate enum PanDirection {
         self.collapsedHeight = collapsedHeight
         self.expandedHeight = expandedHeight
         
-        let frame = CGRect(x: 0, y: self.view.frame.height - self.collapsedHeight, width: self._contentContainer.frame.width, height: self.collapsedHeight)
+        var frame = CGRect(x: 0, y: self.view.frame.height - self.collapsedHeight, width: self._contentContainer.frame.width, height: self.collapsedHeight)
+        
+        if _asPopUp {
+            frame = CGRect(x: 10, y: (self.view.frame.height - self.collapsedHeight)/2, width: self._contentContainer.frame.width, height: self.collapsedHeight)
+        }
         
         UIView.animate(withDuration: 0.2) {
             self._contentContainer.frame = frame
