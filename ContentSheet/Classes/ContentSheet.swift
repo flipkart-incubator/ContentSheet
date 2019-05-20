@@ -401,7 +401,9 @@ fileprivate enum PanDirection {
                 _content.contentSheetDidAddContent?(self)
                 
                 //Check if there is a scrollview to observer
-                _contentContainer.addGestureRecognizer(_panGesture)
+                if !_asPopUp {
+                    _contentContainer.addGestureRecognizer(_panGesture)
+                }
                 
                 //Notify delegate that sheet did show
                 delegate?.contentSheetDidShow?(self)
