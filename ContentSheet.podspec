@@ -4,7 +4,7 @@ Pod::Spec.new do |s|
 # ―――  Spec Metadata  ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 
 s.name         = "ContentSheet"
-s.version      = "0.2-beta-7"
+s.version      = "0.3"
 s.summary      = "A simple control that enables presenting any view controller or any other object that can provide a view like an ActionSheet"
 
 s.description  = <<-DESC
@@ -47,6 +47,6 @@ s.source       = { :git => "https://github.com/flipkart-incubator/ContentSheet.g
 
 s.source_files  = "ContentSheet/Classes", "ContentSheet/Classes/**/*.{h,m,swift}"
 s.exclude_files = "Classes/Exclude"
-
+s.swift_version = '5.0'
 
 end
