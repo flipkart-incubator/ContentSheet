@@ -725,7 +725,6 @@ extension ContentSheet {
 
             // manipulate frame if gesture is in progress
             if recognizer.state == .began || recognizer.state == .changed {
-                _scrollviewToObserve?.resignFirstResponder()
                 if (y + translation.y >= totalHeight - expandedHeight) && (y + translation.y <= totalHeight/* - collapsedHeight*/) {
                     let frame = CGRect(x: 0, y: y + translation.y, width: contentView.frame.width, height: totalHeight - (y + translation.y))
                     recognizer.setTranslation(CGPoint.zero, in: self.view)
