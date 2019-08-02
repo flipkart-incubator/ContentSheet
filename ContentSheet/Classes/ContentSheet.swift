@@ -87,7 +87,7 @@ fileprivate enum PanDirection {
 
 
 
-@objc public class ContentSheet: UIViewController {
+@objc open class ContentSheet: UIViewController {
     
     //MARK: Variables
 
@@ -180,8 +180,8 @@ fileprivate enum PanDirection {
     //Scroll management related
     fileprivate weak var _scrollviewToObserve: UIScrollView?
     
-    fileprivate var collapsedHeight: CGFloat = 0.0
-    fileprivate var expandedHeight: CGFloat = 0.0
+    open var collapsedHeight: CGFloat = 0.0
+    open var expandedHeight: CGFloat = 0.0
 
     fileprivate var _oldCollapsedHeight: CGFloat = 0
     fileprivate var _oldExpandedHeight: CGFloat = 0
@@ -190,7 +190,7 @@ fileprivate enum PanDirection {
     fileprivate var _oldScrollInsets: UIEdgeInsets?
 
     //Rotation
-    @objc public override var shouldAutorotate: Bool {
+    @objc open override var shouldAutorotate: Bool {
         get {
             return false
         }
@@ -295,7 +295,7 @@ fileprivate enum PanDirection {
     }
     
     //MARK: View lifecycle
-    public override func viewDidLoad() {
+    open override func viewDidLoad() {
         super.viewDidLoad()
         
         //Load content view
@@ -325,13 +325,13 @@ fileprivate enum PanDirection {
         self.view.backgroundColor = UIColor.clear
     }
     
-    public override func didReceiveMemoryWarning() {
+    open override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
     
-    override public func viewWillAppear(_ animated: Bool) {
+    override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         if _state == .minimised {
@@ -393,7 +393,7 @@ fileprivate enum PanDirection {
         }
     }
     
-    override public func viewDidAppear(_ animated: Bool) {
+    override open func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         if _state == .minimised {
@@ -418,7 +418,7 @@ fileprivate enum PanDirection {
         delegate?.contentSheetDidAppear?(self)
     }
     
-    override public func viewWillDisappear(_ animated: Bool) {
+    override open func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
         if _state == .minimised {
@@ -448,7 +448,7 @@ fileprivate enum PanDirection {
         }
     }
     
-    override public func viewDidDisappear(_ animated: Bool) {
+    override open func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
         if _state == .minimised {
@@ -474,7 +474,7 @@ fileprivate enum PanDirection {
     
     //Overrides
     //Transition
-    @objc public override var transitioningDelegate: UIViewControllerTransitioningDelegate? {
+    @objc open override var transitioningDelegate: UIViewControllerTransitioningDelegate? {
         get {
             return _transitionController
         }
@@ -484,19 +484,19 @@ fileprivate enum PanDirection {
     }
     
     //Status bar
-    @objc public override var prefersStatusBarHidden: Bool {
+    @objc open override var prefersStatusBarHidden: Bool {
         get {
             return self.content.prefersStatusBarHidden?(contentSheet: self) ?? false
         }
     }
     
-    @objc public override var preferredStatusBarStyle: UIStatusBarStyle {
+    @objc open override var preferredStatusBarStyle: UIStatusBarStyle {
         get {
             return self.content.preferredStatusBarStyle?(contentSheet: self) ?? .default
         }
     }
     
-    @objc public override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+    @objc open override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
         get {
             return self.content.preferredStatusBarUpdateAnimation?(contentSheet: self) ?? .fade
         }
@@ -662,7 +662,7 @@ fileprivate enum PanDirection {
 
 extension ContentSheet {
     
-   public override func willMove(toParent parent: UIViewController?) {
+   open override func willMove(toParent parent: UIViewController?) {
         super.willMove(toParent: parent)
         
         if parent is UINavigationController {
@@ -670,30 +670,9 @@ extension ContentSheet {
         }
     }
     
-    public override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
-        if let presentingVC = self.presentingViewController,
-            presentingVC.presentedViewController == self {
-            _state = .minimised
-            super.dismiss(animated: flag, completion: completion)
-        } else {
-            var frame = self.view.frame
-            
-            let progress = self.view.bounds.height - frame.origin.y
-            let duration = (1 - Double(progress))*0.33
-            
-            frame.origin.y = self.view.bounds.height
-
-            UIView.animate(withDuration: duration,
-                           animations: {
-                            self.view.frame = frame
-            }, completion: { [weak self] _ in
-                if let weakSelf = self {
-                    weakSelf.resetContentSheetHeight(collapsedHeight: weakSelf.collapsedHeight, expandedHeight: weakSelf.expandedHeight)
-                    weakSelf.delegate?.contentSheetDidHide?(weakSelf)
-                }
-            })
-
-        }
+    open override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+        _state = .minimised
+        super.dismiss(animated: flag, completion: completion)
     }
     
     @objc fileprivate func cancelButtonPressed(_ sender: UIBarButtonItem?) {
@@ -895,7 +874,7 @@ extension ContentSheet {
     }
     
     //Touches
-    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
         if dismissOnTouchOutside {
             let touch =  touches.first
