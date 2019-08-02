@@ -40,6 +40,8 @@ fileprivate let HeaderMinHeight: CGFloat = 44.0
     @objc optional func contentSheetDidShow(_ sheet: ContentSheet)
     @objc optional func contentSheetWillHide(_ sheet: ContentSheet)
     @objc optional func contentSheetDidHide(_ sheet: ContentSheet)
+    
+    @objc optional func contentSheetShouldHandleTouches(_ sheet: ContentSheet) -> Bool
 }
 
 
@@ -67,6 +69,8 @@ fileprivate let HeaderMinHeight: CGFloat = 44.0
     @objc optional func prefersStatusBarHidden(contentSheet: ContentSheet) -> Bool
     @objc optional func preferredStatusBarStyle(contentSheet: ContentSheet) -> UIStatusBarStyle
     @objc optional func preferredStatusBarUpdateAnimation(contentSheet: ContentSheet) -> UIStatusBarAnimation
+    
+    @objc optional func contentSheetWillBeginTouchHandling(_ sheet: ContentSheet)
 }
 
 
@@ -917,7 +921,11 @@ extension ContentSheet: UIGestureRecognizerDelegate {
     
     @objc public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if gestureRecognizer == _panGesture {
-            return collapsedHeight <= expandedHeight
+            let shouldBegin = (collapsedHeight <= expandedHeight) && (delegate?.contentSheetShouldHandleTouches?(self) ?? true)
+            if shouldBegin {
+                _content.contentSheetWillBeginTouchHandling?(self)
+            }
+            return shouldBegin
         }
         return true
     }
