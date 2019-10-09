@@ -92,7 +92,7 @@ class ViewController: UIViewController {
         a?.view.backgroundColor = UIColor.yellow
         self.addChild(a!)
         var frame = self.view.bounds.insetBy(dx: 25, dy: 0)
-        frame.size.height = 88
+        frame.size.height = 188
         frame.origin.y = self.view.bounds.midY - 44
         a?.view.frame = frame
         self.view.addSubview(a!.view)
@@ -111,7 +111,7 @@ class ViewController: UIViewController {
             let secondVC = SecondViewController(nibName: nil, bundle: nil)
             let navcon = UINavigationController(rootViewController: secondVC)
             
-            self.present(inContentSheet: navcon, animated: true)
+            self.present(inContentSheet: navcon, animated: true, direction: .bottomToTop)
         }
     }
     
@@ -135,8 +135,8 @@ class ViewController: UIViewController {
             content = contentController
             break
         }
-        
-        let contentSheet = ContentSheet(content: content)
+        let contentSheet = ContentSheet(content: content, presentationType: .contentSheet, presentationDirection: .bottomToTop)
+        //let contentSheet = ContentSheet(content: content)
         contentSheet.showDefaultHeader = (sender as! UIButton).tag != 2
         self.present(contentSheet, animated: true, completion: nil)
     }

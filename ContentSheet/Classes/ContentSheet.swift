@@ -20,14 +20,7 @@
 
 import UIKit
 
-
-fileprivate let CollapsedHeightRatio: CGFloat = 0.5
-fileprivate let ThresholdVelocitySquare: CGFloat = 10000 //100*100
-fileprivate let ThresholdProgressFraction: CGFloat = 0.3
-fileprivate let TotalDuration: Double = 0.5
-
 fileprivate let HeaderMinHeight: CGFloat = 44.0
-
 
 @objc public protocol ContentSheetDelegate {
     
@@ -40,6 +33,8 @@ fileprivate let HeaderMinHeight: CGFloat = 44.0
     @objc optional func contentSheetDidShow(_ sheet: ContentSheet)
     @objc optional func contentSheetWillHide(_ sheet: ContentSheet)
     @objc optional func contentSheetDidHide(_ sheet: ContentSheet)
+    
+    @objc optional func contentSheetShouldHandleTouches(_ sheet: ContentSheet) -> Bool
 }
 
 
@@ -67,26 +62,26 @@ fileprivate let HeaderMinHeight: CGFloat = 44.0
     @objc optional func prefersStatusBarHidden(contentSheet: ContentSheet) -> Bool
     @objc optional func preferredStatusBarStyle(contentSheet: ContentSheet) -> UIStatusBarStyle
     @objc optional func preferredStatusBarUpdateAnimation(contentSheet: ContentSheet) -> UIStatusBarAnimation
+    
+    @objc optional func contentSheetWillBeginTouchHandling(_ sheet: ContentSheet)
 }
 
-
-@objc public enum ContentSheetState: UInt {
-    case minimised
-    case collapsed
-    case expanded
+@objc public enum PresentationType: UInt {
+    case contentSheet
+    case popUp
 }
 
-fileprivate enum PanDirection {
-    case up
-    case down
+@objc public enum PresentationDirection: UInt {
+    case topToBottom
+    case bottomToTop
+    case leftToRight
+    case rightToLeft
 }
 
-
-
-@objc public class ContentSheet: UIViewController {
+@objc open class ContentSheet: UIViewController {
     
     //MARK: Variables
-
+    
     //Utility
     fileprivate var _safeAreaInsets: UIEdgeInsets {
         if #available(iOS 11.0, *) {
@@ -103,6 +98,7 @@ fileprivate enum PanDirection {
     //Content controller object
     //Not necessarilly a view controller
     fileprivate var _content: ContentSheetContentProtocol
+    fileprivate var _asPopUp: Bool = false
     @objc public var content: ContentSheetContentProtocol {
         get {
             return _content
@@ -110,12 +106,11 @@ fileprivate enum PanDirection {
     }
     
     //Reference to content view of content controller
-    fileprivate var _contentView: UIView?
+    var _contentView: UIView?
     
     //Content container
-    fileprivate lazy var _contentContainer: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor.clear
+    lazy var _contentContainer: UIView = {
+        let view = ContentSheetHelper.getDefaultContentView(in: self.view.bounds)
         self.view.addSubview(view)
         return view
     } ()
@@ -123,12 +118,7 @@ fileprivate enum PanDirection {
     //background view for the action sheet
     //default backgorund
     private lazy var _defaultBackground: UIImageView = {
-        let imageView: UIImageView = UIImageView(frame: self.view.bounds)
-        imageView.contentMode = .scaleAspectFill
-        imageView.backgroundColor = UIColor.clear
-        imageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-
-        return imageView
+        return ContentSheetHelper.getDefaultImageView(in: self.view.bounds)
     } ()
     
     //background image
@@ -149,7 +139,6 @@ fileprivate enum PanDirection {
         get {
             let view = backgroundView != nil ? backgroundView! : _defaultBackground
             view.frame = self.view.bounds
-            
             return view
         }
     }
@@ -160,10 +149,7 @@ fileprivate enum PanDirection {
     @objc public var dismissOnTouchOutside: Bool = true
     @objc public var handleKeyboard: Bool = false {
         didSet {
-            self._stopObservingKeyboard()
-            if handleKeyboard {
-                self._startObservingKeyboard()
-            }
+            setUpKeyboardObserving(shouldStart: true)
         }
     }
     @objc public var enablePanGesture: Bool = true {
@@ -175,37 +161,44 @@ fileprivate enum PanDirection {
     //Scroll management related
     fileprivate weak var _scrollviewToObserve: UIScrollView?
     
-    fileprivate var collapsedHeight: CGFloat = 0.0
-    fileprivate var expandedHeight: CGFloat = 0.0
-
+    open var collapsedHeight: CGFloat = 0.0
+    open var expandedHeight: CGFloat = 0.0
+    
     fileprivate var _oldCollapsedHeight: CGFloat = 0
     fileprivate var _oldExpandedHeight: CGFloat = 0
     fileprivate var _keyboardFrame: CGRect?
     fileprivate var _keyboardPresent: Bool = false
     fileprivate var _oldScrollInsets: UIEdgeInsets?
-
+    
     //Rotation
-    @objc public override var shouldAutorotate: Bool {
+    @objc open override var shouldAutorotate: Bool {
         get {
             return false
         }
     }
     
-    //State
-    fileprivate var _state: ContentSheetState = .minimised
-    @objc public var state: ContentSheetState {
+    //Presentation Type
+    fileprivate var _presentationType: PresentationType = .contentSheet
+    @objc public var presentationType: PresentationType {
         get {
-            return _state
+            return _presentationType
         }
     }
-
+    
+    fileprivate var _presentationDirection: PresentationDirection = .bottomToTop
+    @objc public var presentationDirection: PresentationDirection {
+        get {
+            return _presentationDirection
+        }
+    }
+    
     //Transition
     fileprivate lazy var _transitionController: UIViewControllerTransitioningDelegate = {
         let controller = ContentSheetTransitionDelegate()
-        controller.duration = TotalDuration
+        controller.duration = ContentSheetHelper.TotalDuration
         return controller
     } ()
-
+    
     //Delegate
     @objc public weak var delegate: ContentSheetDelegate?
     
@@ -234,32 +227,13 @@ fileprivate enum PanDirection {
         }
     }
     
-    
     private func _defaultHeader() -> ContentHeaderView {
-        
-        var frame = self.view.frame
-        frame.size.height = 44.0;
-        
-        let navigationBar = UINavigationBar(frame: frame)
+        let (header, navigationBar) = ContentSheetHelper.getDefaultHeader(in: self.view.frame)
         navigationBar.delegate = self
-        
         _navigationBar = navigationBar
-        
-        let header = ContentHeaderView(frame: frame)
-        header.tintColor = navigationBar.tintColor
-        header.backgroundColor = UIColor(white: 1.0, alpha: 0.7)
-        
-        navigationBar.setBackgroundImage(UIImage(), for: .default)
-        navigationBar.barTintColor = UIColor.clear
-        navigationBar.backgroundColor = UIColor.clear
-        navigationBar.isTranslucent = true
-
-        header.addSubview(navigationBar)
-        
         return header
     }
     
-
     //Gesture
     fileprivate lazy var _panGesture: UIPanGestureRecognizer = {
         let gesture = UIPanGestureRecognizer.init(target: self, action: #selector(handlePan(_:)))
@@ -267,6 +241,7 @@ fileprivate enum PanDirection {
         return gesture
     } ()
     
+    fileprivate var contentSheetPresentationAnimator: ViewPresentationProtocol!
     
     //MARK: Initializers
     //Not implementing required initializer
@@ -275,177 +250,102 @@ fileprivate enum PanDirection {
     }
     
     // required initializer
-    // content controller is non-optional
-    @objc public required init(content: ContentSheetContentProtocol) {
+    @objc public required init(content: ContentSheetContentProtocol, presentationType: PresentationType, presentationDirection: PresentationDirection) {
         _content = content
+        _presentationType = presentationType
+        _presentationDirection = presentationDirection
         super.init(nibName: nil, bundle: nil)
+        initialiseAnimator()
         self.modalPresentationStyle = .custom
     }
     
     //MARK: View lifecycle
-    public override func viewDidLoad() {
+    open override func viewDidLoad() {
         super.viewDidLoad()
-        
         //Load content view
         if let contentView = _content.view {
             _contentView = contentView
-            
-            if showDefaultHeader {
-                
-                self._contentHeader = _defaultHeader()
-                
-                let navigationItem: UINavigationItem
-                
-                if let item = self.content.navigationItem {
-                    navigationItem = item
-                } else {
-                    navigationItem = UINavigationItem()
-                }
-                
-                if navigationItem.leftBarButtonItem == nil {
-                    let cancelButton = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(cancelButtonPressed(_:)))
-                    navigationItem.leftBarButtonItem = cancelButton
-                }
-                
-                self._navigationBar!.items = [navigationItem]
-            }
+            updateContentSheetHeader()
+            self.setIntialHeights()
         }
         self.view.backgroundColor = UIColor.clear
     }
     
-    public override func didReceiveMemoryWarning() {
+    open override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-    
-    override public func viewWillAppear(_ animated: Bool) {
+    override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        if _state == .minimised {
+        if contentSheetPresentationAnimator.state == .minimised {
             //Add background view
             self.view.insertSubview(_backgroundView, at: 0)
-            
             //Add content view
-            if let contentView = _contentView {
-                
-                let proposedCollapsedHeight = max(_content.collapsedHeight?(containedIn: self) ?? 0.0, 0.0)
-                collapsedHeight = proposedCollapsedHeight == 0.0 ? CollapsedHeightRatio*view.bounds.height : proposedCollapsedHeight
-                var frame = CGRect(x: 0, y: self.view.bounds.height, width: self.view.bounds.width, height: collapsedHeight)
-                _contentContainer.frame = frame
-                
-                if let header = self.contentHeader {
-                    _contentContainer.addSubview(header)
-                }
-                
-                contentView.frame = frame
-                
+            if let _ = _contentView {
                 //Content controller should use this do any preps before content view is added
                 // e.g. in case of view controllers, they might wanna prepare for appearance transitions
+                self.setInitialContentContainer()
                 _content.contentSheetWillAddContent?(self)
-                _contentContainer.addSubview(contentView)
-                
-                //Layout content
-                self._layoutContentSubviews()
-                
                 //Do not expand if no expanded height
-                expandedHeight = max(min(max(_content.expandedHeight?(containedIn: self) ?? 0.0, 0.0), self.view.frame.height), collapsedHeight)
-                
-                
-                self.transitionCoordinator?.animate(alongsideTransition: { (_) in
-                    //Animate content
-                    frame.origin.y = self.view.bounds.height - self.collapsedHeight
-                    frame.size.height = self.collapsedHeight
-                    self._contentContainer.frame = frame
-                    self._layoutContentSubviews()
-                }, completion: nil)
-                
-                //Notify delegate that sheet will show
+                contentSheetPresentationAnimator.viewWillStartPresentation(self)
                 delegate?.contentSheetWillShow?(self)
             }
         }
-        
         //Notify delegate that view will appear
         delegate?.contentSheetWillAppear?(self)
-        
-        if self.handleKeyboard {
-            self._stopObservingKeyboard()
-            self._startObservingKeyboard()
-        }
+        setUpKeyboardObserving(shouldStart: true)
     }
     
-    override public func viewDidAppear(_ animated: Bool) {
+    override open func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        if _state == .minimised {
-            _state = .collapsed
-            
+        if contentSheetPresentationAnimator.state == .minimised {
             if _contentView != nil {
                 //Content controller should use this do any preps after content view is added
                 // e.g. in case of view controllers, they might wanna end the appearance transitions
+                contentSheetPresentationAnimator.viewDidStartPresentation(self)
                 _content.contentSheetDidAddContent?(self)
-                
-                //Check if there is a scrollview to observer
                 _contentContainer.addGestureRecognizer(_panGesture)
-                
                 //Notify delegate that sheet did show
                 delegate?.contentSheetDidShow?(self)
             }
         }
-        
         //Notify delegate that view did appear
         delegate?.contentSheetDidAppear?(self)
     }
     
-    override public func viewWillDisappear(_ animated: Bool) {
+    override open func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
-        if _state == .minimised {
-            
+        if contentSheetPresentationAnimator.state == .minimised {
             if _contentView != nil {
                 //Content controller should use this do any preps before content view is removed
                 // e.g. in case of view controllers, they might wanna prepare for appearance transitions
                 _content.contentSheetWillRemoveContent?(self)
-                
                 //Animate content
-                var frame = _contentContainer.frame
-                frame.origin.y = self.view.frame.maxY
-                self.transitionCoordinator?.animate(alongsideTransition: { (_) in
-                    self._contentContainer.frame = frame
-                }, completion: nil)
-                
+                contentSheetPresentationAnimator.viewWillEndPresentation(self)
                 //Notify delegate that sheet will hide
                 delegate?.contentSheetWillHide?(self)
             }
         }
-        
         //Notify delegate view will disappear
         delegate?.contentSheetWillDisappear?(self)
-
-        if self.handleKeyboard {
-            self._stopObservingKeyboard()
-        }
+        setUpKeyboardObserving(shouldStart: false)
     }
     
-    override public func viewDidDisappear(_ animated: Bool) {
+    override open func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        
-        if _state == .minimised {
-            
+        if contentSheetPresentationAnimator.state == .minimised {
             //Remove background view
             _backgroundView.removeFromSuperview()
-            
             if let contentView = _contentView {
                 contentView.removeFromSuperview()
                 //Content controller should use this do any preps after content view is removed
                 // e.g. in case of view controllers, they might wanna end the appearance transitions
                 _content.contentSheetDidRemoveContent?(self)
-                
                 //Notify delegate that sheet did hide
                 delegate?.contentSheetDidHide?(self)
             }
         }
-        
         //Notify delegate view did disappear
         delegate?.contentSheetDidDisappear?(self)
     }
@@ -453,7 +353,7 @@ fileprivate enum PanDirection {
     
     //Overrides
     //Transition
-    @objc public override var transitioningDelegate: UIViewControllerTransitioningDelegate? {
+    @objc open override var transitioningDelegate: UIViewControllerTransitioningDelegate? {
         get {
             return _transitionController
         }
@@ -463,19 +363,19 @@ fileprivate enum PanDirection {
     }
     
     //Status bar
-    @objc public override var prefersStatusBarHidden: Bool {
+    @objc open override var prefersStatusBarHidden: Bool {
         get {
             return self.content.prefersStatusBarHidden?(contentSheet: self) ?? false
         }
     }
     
-    @objc public override var preferredStatusBarStyle: UIStatusBarStyle {
+    @objc open override var preferredStatusBarStyle: UIStatusBarStyle {
         get {
             return self.content.preferredStatusBarStyle?(contentSheet: self) ?? .default
         }
     }
     
-    @objc public override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+    @objc open override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
         get {
             return self.content.preferredStatusBarUpdateAnimation?(contentSheet: self) ?? .fade
         }
@@ -484,13 +384,7 @@ fileprivate enum PanDirection {
     @objc public func resetContentSheetHeight(collapsedHeight: CGFloat, expandedHeight: CGFloat) {
         self.collapsedHeight = collapsedHeight
         self.expandedHeight = expandedHeight
-        
-        let frame = CGRect(x: 0, y: self.view.frame.height - self.collapsedHeight, width: self._contentContainer.frame.width, height: self.collapsedHeight)
-        
-        UIView.animate(withDuration: 0.2) {
-            self._contentContainer.frame = frame
-            self._layoutContentSubviews()
-        }
+        contentSheetPresentationAnimator.resetViewFrame(sheet: self)
     }
     
     fileprivate func _startObservingKeyboard() {
@@ -533,7 +427,6 @@ fileprivate enum PanDirection {
         if self._keyboardPresent {
             return
         }
-        
         var keyboardHeight: CGFloat = 250
         if let userInfo = notification.userInfo {
             var localKeyboard = true
@@ -574,7 +467,7 @@ fileprivate enum PanDirection {
                 
                 let insets = self._oldScrollInsets ?? UIEdgeInsets.zero
                 scrollview.contentInset = UIEdgeInsets(top: insets.top, left: insets.left, bottom: insets.bottom + keyboardFrame.height, right: insets.right)
-                                
+                
                 let focusRect = firstResponder.convert(firstResponder.frame, to: scrollview)
                 scrollview.scrollRectToVisible(focusRect, animated: true)
             }
@@ -588,7 +481,7 @@ fileprivate enum PanDirection {
             
             self._oldCollapsedHeight = self.collapsedHeight
             self._oldExpandedHeight = self.expandedHeight
-
+            
             if let scrollview = _content.scrollViewToObserve?(containedIn: self) {
                 _scrollviewToObserve = scrollview
                 scrollview.contentInset = self._oldScrollInsets ?? UIEdgeInsets.zero
@@ -602,7 +495,7 @@ fileprivate enum PanDirection {
             resetContentSheetHeight(collapsedHeight: self._oldCollapsedHeight, expandedHeight: self._oldExpandedHeight)
         }
     }
-
+    
     @objc private func _keyboardWillChangeFrame(_ notification: Notification) {
         if self._keyboardPresent {
             
@@ -617,7 +510,7 @@ fileprivate enum PanDirection {
             resetContentSheetHeight(collapsedHeight: min(maxHeight, self.collapsedHeight + keyboardHeight), expandedHeight: min(maxHeight, self.expandedHeight + keyboardHeight))
         }
     }
-
+    
     @objc private func _keyboardDidChangeFrame(_ notification: Notification) {
         if self._keyboardPresent, let keyboardFrame = self._keyboardFrame {
             if let scrollview = _content.scrollViewToObserve?(containedIn: self), let firstResponder = scrollview.firstResponder {
@@ -631,22 +524,81 @@ fileprivate enum PanDirection {
             }
         }
     }
+    
+    @objc private func initialiseAnimator() {
+        switch presentationType {
+        case .contentSheet:
+            let animator =  ContentSheetPresentationAnimator()
+            animator.delegate = self
+            contentSheetPresentationAnimator = animator
+        case .popUp:
+            switch presentationDirection {
+            case .leftToRight,.rightToLeft:
+                let animator =  PopUpHorizontalPresentationAnimator()
+                animator.delegate = self
+                contentSheetPresentationAnimator = animator
+            case .bottomToTop,.topToBottom:
+                let animator =  PopUpVerticalPresentationAnimator()
+                animator.delegate = self
+                contentSheetPresentationAnimator = animator
+            }
+        }
+        contentSheetPresentationAnimator.presentationDirection = presentationDirection
+    }
+    
+    @objc private func updateContentSheetHeader() {
+        if showDefaultHeader {
+            self._contentHeader = _defaultHeader()
+            let navigationItem: UINavigationItem = self.content.navigationItem ?? UINavigationItem()
+            if navigationItem.leftBarButtonItem == nil {
+                let cancelButton = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(cancelButtonPressed(_:)))
+                navigationItem.leftBarButtonItem = cancelButton
+            }
+            self._navigationBar?.items = [navigationItem]
+        }
+    }
+    
+    @objc private func setIntialHeights() {
+        let proposedCollapsedHeight = max(_content.collapsedHeight?(containedIn: self) ?? 0.0, 0.0)
+        let proposedExpandedHeight = max(_content.expandedHeight?(containedIn: self) ?? 0.0, 0.0)
+        collapsedHeight = proposedCollapsedHeight == 0.0 ? ContentSheetHelper.CollapsedHeightRatio*view.bounds.height : proposedCollapsedHeight
+        expandedHeight = max(min(proposedExpandedHeight, self.view.frame.height), collapsedHeight)
+    }
+    
+    @objc private func setInitialContentContainer() {
+        let frame = contentSheetPresentationAnimator.getIntialViewFrame(in: self.view.bounds)
+        _contentContainer.frame = frame
+        if let header = contentHeader {
+            _contentContainer.addSubview(header)
+        }
+        _contentView?.frame = frame
+        if let contentView = _contentView {
+            _contentContainer.addSubview(contentView)
+        }
+        self._layoutContentSubviews()
+    }
+    
+    @objc private func setUpKeyboardObserving(shouldStart: Bool) {
+        self._stopObservingKeyboard()
+        if self.handleKeyboard && shouldStart{
+            self._startObservingKeyboard()
+        }
+    }
 }
 
 
 
 extension ContentSheet {
     
-   public override func willMove(toParent parent: UIViewController?) {
+    open override func willMove(toParent parent: UIViewController?) {
         super.willMove(toParent: parent)
-        
         if parent is UINavigationController {
             fatalError("Attempt to push content sheet inside a navigation controller. content sheet can only be presented.")
         }
     }
     
-    public override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
-        _state = .minimised
+    open override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+        contentSheetPresentationAnimator.state = .minimised
         super.dismiss(animated: flag, completion: completion)
     }
     
@@ -655,115 +607,12 @@ extension ContentSheet {
     }
 }
 
-
-
-
-
 //MARK: Interaction and gestures
 extension ContentSheet {
     
     @objc fileprivate func handlePan(_ recognizer: UIPanGestureRecognizer) {
-        
-        if let contentView = _contentView {
-            let translation = recognizer.translation(in: self.view)
-            
-            let y = _contentContainer.frame.minY, totalHeight = self.view.frame.height
-
-            let possibleState = _possibleStateChange(y)
-
-            let minY = possibleState == .minimised ? totalHeight - collapsedHeight : totalHeight - expandedHeight
-            let maxY = possibleState == .minimised ? totalHeight : totalHeight - collapsedHeight
-
-            let direction: PanDirection = _panDirection(recognizer, view: _contentContainer, possibleStateChange: possibleState)
-            let progress = direction == .down ? (y - minY)/(maxY - minY) : (maxY - y)/(maxY - minY)
-
-            // manipulate frame if gesture is in progress
-            if recognizer.state == .began || recognizer.state == .changed {
-                if (y + translation.y >= totalHeight - expandedHeight) && (y + translation.y <= totalHeight/* - collapsedHeight*/) {
-                    let frame = CGRect(x: 0, y: y + translation.y, width: contentView.frame.width, height: totalHeight - (y + translation.y))
-                    recognizer.setTranslation(CGPoint.zero, in: self.view)
-                    
-                    _contentContainer.frame = frame
-                }
-            }
-
-            // animate to either state if gesture and ended or cancelled
-            if recognizer.state == .ended || recognizer.state == .cancelled {
-                
-                let duration = (1 - Double(progress))*TotalDuration
-                let finalState: ContentSheetState
-                if _state == .collapsed {
-                    if possibleState == .minimised {
-                        finalState = direction == .up ? .collapsed : .minimised
-                    } else {
-                        finalState = direction == .up ? .expanded : .collapsed
-                    }
-                } else if _state == .expanded {
-                    finalState = direction == .up ? .expanded : .collapsed
-                } else {
-                    finalState = .minimised
-                }
-                
-                if finalState == .minimised {
-                    (_transitionController as? ContentSheetTransitionDelegate)?.duration = duration
-                    self.dismiss(animated: true, completion: nil)
-                    return
-                }
-                
-                UIView.animate(withDuration: duration,
-                               delay: 0.0,
-                               usingSpringWithDamping: 0.75,
-                               initialSpringVelocity: 0.8,
-                               options: [.allowUserInteraction],
-                               animations: {
-                                
-                                switch finalState {
-                                case .expanded:
-                                    let y = self.view.bounds.height - self.expandedHeight
-                                    let frame = CGRect(x: 0, y: y, width: self._contentContainer.frame.width, height: self.expandedHeight)
-                                    self._contentContainer.frame = frame
-                                    
-                                    self._layoutContentSubviews()
-                                    break
-                                case .collapsed:
-                                    let frame = CGRect(x: 0, y: totalHeight - self.collapsedHeight, width: self._contentContainer.frame.width, height: self.collapsedHeight)
-                                    self._contentContainer.frame = frame
-                                    break
-//                                case .minimised:
-//                                    contentView.frame = CGRect(x: 0, y: totalHeight, width: contentView.frame.width, height: contentView.frame.height)
-//                                    break;
-                                default:
-                                    break
-                                }},
-                               completion: { [weak self] _ in
-                                if let strong = self {
-                                    
-                                    strong._state = finalState
-                                    
-                                    if let bar = strong.contentHeader {
-                                        strong._contentContainer.bringSubviewToFront(bar)
-                                    }
-                                    
-                                    switch finalState {
-                                    case .expanded:
-                                        strong._scrollviewToObserve?.isScrollEnabled = true
-                                        break;
-                                    case .collapsed:
-                                        strong._scrollviewToObserve?.isScrollEnabled = strong.collapsedHeight < strong.expandedHeight ? false : true
-                                        strong._layoutContentSubviews()
-                                        break;
-//                                    case .minimised:
-//                                        strong._scrollviewToObserve?.isScrollEnabled = false
-//                                        contentView.frame = CGRect(x: 0, y: totalHeight, width: contentView.frame.width, height: 0)
-//                                        strong.dismiss(animated: true, completion: nil)
-//                                        break;
-                                    default:
-                                        break
-                                    }
-                                }})
-            }
-            
-            self._layoutContentSubviews()
+        if let _ = _contentView {
+            contentSheetPresentationAnimator.panGestureInitiated(recognizer: recognizer, in: self)
         }
     }
     
@@ -807,50 +656,8 @@ extension ContentSheet {
         }
     }
     
-    @inline(__always) fileprivate func _possibleStateChange(_ progress: CGFloat) -> ContentSheetState {
-        if expandedHeight <= collapsedHeight {
-            return .minimised
-        }
-        let possibleState: ContentSheetState
-        if _state == .expanded {
-            possibleState = .collapsed
-        } else if _state == .collapsed {
-            if progress > self.view.frame.height - collapsedHeight {
-                possibleState = .minimised
-            } else {
-                possibleState = .expanded
-            }
-        } else {
-            possibleState = .minimised
-        }
-        return possibleState
-    }
-    
-    fileprivate func _panDirection(_ gesture: UIPanGestureRecognizer, view contentView: UIView, possibleStateChange possibleState: ContentSheetState) -> PanDirection {
-        
-        let velocity = gesture.velocity(in: self.view)
-        let progress = contentView.frame.minY, totalHeight = self.view.frame.height
-        
-        let min = possibleState == .minimised ? totalHeight - collapsedHeight : totalHeight - expandedHeight
-        let max = possibleState == .minimised ? totalHeight : totalHeight - collapsedHeight //totalHeight - collapsedHeight//
-        
-        let ratio = (max - progress)/(progress - min)
-        let thresholdVelocitySquare = (ratio >= 0.5 && ratio <= 2.0) ? 0.0 : ThresholdVelocitySquare
-        
-        let direction: PanDirection
-        
-        if (pow(velocity.y, 2) < thresholdVelocitySquare) {
-            direction = max - progress > progress - min ? .up : .down
-        } else {
-            direction = velocity.y < 0 ? .up : .down
-        }
-        
-        return direction
-    }
-    
     //Touches
-    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
+    open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if dismissOnTouchOutside {
             let touch =  touches.first
             var contentInteracted = false
@@ -862,7 +669,6 @@ extension ContentSheet {
                 return
             }
         }
-        
         super.touchesBegan(touches, with: event)
     }
 }
@@ -875,7 +681,11 @@ extension ContentSheet: UIGestureRecognizerDelegate {
     
     @objc public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if gestureRecognizer == _panGesture {
-            return collapsedHeight <= expandedHeight
+            let shouldBegin = (collapsedHeight <= expandedHeight) && (delegate?.contentSheetShouldHandleTouches?(self) ?? true)
+            if shouldBegin {
+                _content.contentSheetWillBeginTouchHandling?(self)
+            }
+            return shouldBegin
         }
         return true
     }
@@ -892,32 +702,28 @@ extension ContentSheet: UIGestureRecognizerDelegate {
         if let scrollview = _content.scrollViewToObserve?(containedIn: self) {
             _scrollviewToObserve = scrollview
         }
-        
         guard let scrollView = _scrollviewToObserve else {
             return false
         }
-        
         guard gestureRecognizer == _panGesture else {
             return false
         }
-        
-        
-        
-        let direction = _panDirection(_panGesture, view: _contentContainer, possibleStateChange: _possibleStateChange(_contentContainer.frame.minY))
-        
-        if (collapsedHeight <= expandedHeight)
-            &&
-            (((scrollView.contentOffset.y + scrollView.contentInset.top == 0) && (direction == .down)) || (_state == .collapsed && collapsedHeight < expandedHeight)) {
-            scrollView.isScrollEnabled = false
-        } else {
-            scrollView.isScrollEnabled = true
+        guard self.presentationType != .popUp else {
+            return false
         }
-        
+        if let direction = contentSheetPresentationAnimator.getPanDirection?(_panGesture, sheet: self, possibleStateChange: contentSheetPresentationAnimator.getPossibleStateChange?(currentYPosition: _contentContainer.frame.minY, parentHeight: self.view.frame.height) ?? .minimised) {
+            
+            if (collapsedHeight <= expandedHeight)
+                &&
+                (((scrollView.contentOffset.y + scrollView.contentInset.top == 0) && (direction == .down)) || (contentSheetPresentationAnimator.state == .collapsed && collapsedHeight < expandedHeight)) {
+                scrollView.isScrollEnabled = false
+            } else {
+                scrollView.isScrollEnabled = true
+            }
+        }
         return false
     }
 }
-
-
 
 //Convenience
 extension ContentSheet {
@@ -933,154 +739,41 @@ extension ContentSheet {
     }
 }
 
-
-
 //UIBarPositioningDelegate
 extension ContentSheet: UINavigationBarDelegate {
-    
     @objc public func position(for bar: UIBarPositioning) -> UIBarPosition {
         return .top
     }
 }
 
-
-
-
-
-//MARK: UIViewController+ContentSheet
-extension UIViewController: ContentSheetContentProtocol {
+//Delegate methods from ContentSheetPresentationAnimator
+extension ContentSheet: ViewPresentationUpdateProtocol {
     
-    //MARK: Utility
-    @objc public func contentSheet() -> ContentSheet? {
-        return ContentSheet.contentSheet(content: self)
+    public func getCollapsedHeight() -> CGFloat {
+        return collapsedHeight
     }
     
-    @objc public func cs_navigationBar() -> UINavigationBar? {
-        return self.navigationController != nil ? self.navigationController?.navigationBar : self.contentSheet()?.contentNavigationBar
+    public func getExpandedHeight() -> CGFloat {
+        return expandedHeight
     }
     
-    //MARK: ContentSheetContentProtocol
-    open func contentSheetWillAddContent(_ sheet: ContentSheet) {
-        self.willMove(toParent: sheet)
-        sheet.addChild(self)
-        //        self.beginAppearanceTransition(true, animated: true)
+    public func updateContentContainerFrame(updatedFrame frame: CGRect) {
+        self._contentContainer.frame = frame
+        self._layoutContentSubviews()
     }
     
-    open func contentSheetDidAddContent(_ sheet: ContentSheet) {
-        //        self.endAppearanceTransition()
-        self.didMove(toParent: sheet)
+    public func dismissContentSheet(withDuration duration: Double) {
+        (_transitionController as? ContentSheetTransitionDelegate)?.duration = duration
+        self.dismiss(animated: true, completion: nil)
     }
     
-    open func contentSheetWillRemoveContent(_ sheet: ContentSheet) {
-        self.willMove(toParent: nil)
-        self.removeFromParent()
-        //        self.beginAppearanceTransition(false, animated: true)
-    }
-    
-    open func contentSheetDidRemoveContent(_ sheet: ContentSheet) {
-        //        self.endAppearanceTransition()
-        self.didMove(toParent: nil)
-    }
-    
-    open func collapsedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
-        return UIScreen.main.bounds.height*0.5
-    }
-
-    open func prefersStatusBarHidden(contentSheet: ContentSheet) -> Bool {
-        return false
-    }
-    
-    open func preferredStatusBarStyle(contentSheet: ContentSheet) -> UIStatusBarStyle {
-        return .default
-    }
-    
-    open func preferredStatusBarUpdateAnimation(contentSheet: ContentSheet) -> UIStatusBarAnimation {
-        return .fade
-    }
-    
-    //Returning the same height as collapsed height by default
-    open func expandedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
-        return self.collapsedHeight(containedIn: contentSheet)
-    }
-    
-    open func scrollViewToObserve(containedIn contentSheet: ContentSheet) -> UIScrollView? {
-        return nil
-    }
-    
-    //MARK: Presentation
-    @objc open func present(inContentSheet content: ContentSheetContentProtocol, animated flag: Bool, completion: (() -> Swift.Void)? = nil) {
-        
-        let contentSheet = ContentSheet(content: content)
-        self.present(contentSheet, animated: true, completion: completion)
-    }
-    
-    @objc open func dismissContentSheet(animated flag: Bool, completion: (() -> Swift.Void)? = nil) {
-        self.contentSheet()?.dismiss(animated: true, completion: completion)
-    }
-}
-
-
-extension UINavigationController {
-    
-    @objc open override func collapsedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
-        return self.visibleViewController?.collapsedHeight(containedIn: contentSheet) ?? UIScreen.main.bounds.height*0.5
-    }
-    
-    //Returning the same height as collapsed height by default
-    @objc open override func expandedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
-        return self.visibleViewController?.expandedHeight(containedIn: contentSheet) ?? self.collapsedHeight(containedIn: contentSheet)
-    }
-    
-    @objc open override func scrollViewToObserve(containedIn contentSheet: ContentSheet) -> UIScrollView? {
-        return self.visibleViewController?.scrollViewToObserve(containedIn: contentSheet)
-    }
-    
-    @objc open override func prefersStatusBarHidden(contentSheet: ContentSheet) -> Bool {
-        return self.visibleViewController?.prefersStatusBarHidden(contentSheet: contentSheet) ?? false
-    }
-    
-    @objc open override func preferredStatusBarStyle(contentSheet: ContentSheet) -> UIStatusBarStyle {
-        return self.visibleViewController?.preferredStatusBarStyle(contentSheet: contentSheet) ?? .default
-    }
-    
-    @objc open override func preferredStatusBarUpdateAnimation(contentSheet: ContentSheet) -> UIStatusBarAnimation {
-        return self.visibleViewController?.preferredStatusBarUpdateAnimation(contentSheet: contentSheet) ?? .fade
-    }
-}
-
-
-extension UIView: ContentSheetContentProtocol {
-    
-    @objc open var view: UIView! {
-        get {
-            return self
+    public func updateWhenPanGestureCompleted() {
+        if let bar = self.contentHeader {
+            self._contentContainer.bringSubviewToFront(bar)
         }
     }
     
-    //MARK: Presentation
-    @objc open func dismissContentSheet(animated flag: Bool, completion: (() -> Swift.Void)? = nil) {
-        self.contentSheet()?.dismiss(animated: true, completion: completion)
-    }
-    
-    //MARK: Utility
-    @objc public func contentSheet() -> ContentSheet? {
-        return ContentSheet.contentSheet(content: self)
+    public func updateScrollingBehavior(isScrollEnabled: Bool) {
+        self._scrollviewToObserve?.isScrollEnabled = isScrollEnabled
     }
 }
-
-extension UIView {
-    @objc public var firstResponder: UIView? {
-        guard !isFirstResponder else { return self }
-        
-        for subview in subviews {
-            if let firstResponder = subview.firstResponder {
-                return firstResponder
-            }
-        }
-        
-        return nil
-    }
-}
-
-
-

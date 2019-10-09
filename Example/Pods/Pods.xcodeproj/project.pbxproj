@@ -10,6 +10,13 @@
 		077685F36821B7D4F9878D8EA62FA94B /* ContentSheetTransitionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C858977D5F5BBF5C7A61874C4EA48D /* ContentSheetTransitionDelegate.swift */; };
 		2F1BD6ED0F9E53CA6A53A97357938525 /* Pods-FKWidgetSheet_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 85808AC741A796653D018DFC0CC45891 /* Pods-FKWidgetSheet_Tests-dummy.m */; };
 		64C47BEA116D7157E7693B5AE52E793E /* Pods-FKWidgetSheet_Example-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 982AD1565F728953D5726A7BE757F088 /* Pods-FKWidgetSheet_Example-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		672A7EAF234E17A300F7FEE6 /* PopUpVerticalPresentationAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672A7EAB234E17A300F7FEE6 /* PopUpVerticalPresentationAnimator.swift */; };
+		672A7EB0234E17A300F7FEE6 /* PopUpHorizontalPresentationAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672A7EAC234E17A300F7FEE6 /* PopUpHorizontalPresentationAnimator.swift */; };
+		672A7EB1234E17A300F7FEE6 /* ContentSheetHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672A7EAD234E17A300F7FEE6 /* ContentSheetHelper.swift */; };
+		672A7EB2234E17A300F7FEE6 /* ContentSheetPresentationAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672A7EAE234E17A300F7FEE6 /* ContentSheetPresentationAnimator.swift */; };
+		672A7EB7234E187B00F7FEE6 /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672A7EB6234E180500F7FEE6 /* UIViewController+Extension.swift */; };
+		672A7EB8234E187E00F7FEE6 /* UINavigationController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672A7EB5234E180500F7FEE6 /* UINavigationController+Extension.swift */; };
+		672A7EB9234E188000F7FEE6 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672A7EB4234E180500F7FEE6 /* UIView+Extension.swift */; };
 		7C0623CCFC5C67BFC27EBFC728C4C9D4 /* ContentSheet-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7F243082FB085E0E12A1E2AAF4E02B /* ContentSheet-dummy.m */; };
 		96C30C53BBB0C9710A13B023CE4C3929 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
 		AD7A21F21733B27D64E61C749359BAE1 /* ContentSheet-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = AA09F92DD67503EBFCEDADD10217634F /* ContentSheet-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -45,6 +52,13 @@
 		54281D66BFE7F2C2B2D48A3CFB138496 /* Pods-FKWidgetSheet_Example-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-FKWidgetSheet_Example-acknowledgements.markdown"; sourceTree = "<group>"; };
 		58A236141AAEDE9C15D4E270755C1612 /* Pods-FKWidgetSheet_Tests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-FKWidgetSheet_Tests-acknowledgements.plist"; sourceTree = "<group>"; };
 		6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.3.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		672A7EAB234E17A300F7FEE6 /* PopUpVerticalPresentationAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopUpVerticalPresentationAnimator.swift; sourceTree = "<group>"; };
+		672A7EAC234E17A300F7FEE6 /* PopUpHorizontalPresentationAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopUpHorizontalPresentationAnimator.swift; sourceTree = "<group>"; };
+		672A7EAD234E17A300F7FEE6 /* ContentSheetHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentSheetHelper.swift; sourceTree = "<group>"; };
+		672A7EAE234E17A300F7FEE6 /* ContentSheetPresentationAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentSheetPresentationAnimator.swift; sourceTree = "<group>"; };
+		672A7EB4234E180500F7FEE6 /* UIView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
+		672A7EB5234E180500F7FEE6 /* UINavigationController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigationController+Extension.swift"; sourceTree = "<group>"; };
+		672A7EB6234E180500F7FEE6 /* UIViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
 		67FF30A3066CB942FCFD8F468A7BC909 /* Pods-FKWidgetSheet_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-FKWidgetSheet_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		844E8689FD08397A446D04CEEA75C179 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		85808AC741A796653D018DFC0CC45891 /* Pods-FKWidgetSheet_Tests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-FKWidgetSheet_Tests-dummy.m"; sourceTree = "<group>"; };
@@ -124,6 +138,16 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		672A7EB3234E180500F7FEE6 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				672A7EB4234E180500F7FEE6 /* UIView+Extension.swift */,
+				672A7EB5234E180500F7FEE6 /* UINavigationController+Extension.swift */,
+				672A7EB6234E180500F7FEE6 /* UIViewController+Extension.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		6FE2DE91D68D7BCF6CACB215D6084E78 /* Targets Support Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -182,6 +206,10 @@
 				96749183CA91A77ECC3FC1FE6F4BD2D0 /* ContentSheet.swift */,
 				D6E1D890210F57580071AB3B /* ContentHeader.swift */,
 				94C858977D5F5BBF5C7A61874C4EA48D /* ContentSheetTransitionDelegate.swift */,
+				672A7EAD234E17A300F7FEE6 /* ContentSheetHelper.swift */,
+				672A7EAE234E17A300F7FEE6 /* ContentSheetPresentationAnimator.swift */,
+				672A7EAC234E17A300F7FEE6 /* PopUpHorizontalPresentationAnimator.swift */,
+				672A7EAB234E17A300F7FEE6 /* PopUpVerticalPresentationAnimator.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -197,6 +225,7 @@
 		B13FFBAF711CE85B7CBD4F753D3C3423 /* ContentSheet */ = {
 			isa = PBXGroup;
 			children = (
+				672A7EB3234E180500F7FEE6 /* Extensions */,
 				8BE419B1FDB9D7AF7F820532BD668936 /* Classes */,
 			);
 			path = ContentSheet;
@@ -329,6 +358,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 7DB346D0F39D3F0E887471402A8071AB;
@@ -356,10 +386,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				672A7EB9234E188000F7FEE6 /* UIView+Extension.swift in Sources */,
+				672A7EB7234E187B00F7FEE6 /* UIViewController+Extension.swift in Sources */,
 				7C0623CCFC5C67BFC27EBFC728C4C9D4 /* ContentSheet-dummy.m in Sources */,
 				E9E45DD6AE12BA7F3FFD958A9D3905C4 /* ContentSheet.swift in Sources */,
 				D6E1D891210F57580071AB3B /* ContentHeader.swift in Sources */,
 				077685F36821B7D4F9878D8EA62FA94B /* ContentSheetTransitionDelegate.swift in Sources */,
+				672A7EB2234E17A300F7FEE6 /* ContentSheetPresentationAnimator.swift in Sources */,
+				672A7EAF234E17A300F7FEE6 /* PopUpVerticalPresentationAnimator.swift in Sources */,
+				672A7EB8234E187E00F7FEE6 /* UINavigationController+Extension.swift in Sources */,
+				672A7EB1234E17A300F7FEE6 /* ContentSheetHelper.swift in Sources */,
+				672A7EB0234E17A300F7FEE6 /* PopUpHorizontalPresentationAnimator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
