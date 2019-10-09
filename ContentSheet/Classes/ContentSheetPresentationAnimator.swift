@@ -25,8 +25,9 @@ import Foundation
     @objc func viewDidStartPresentation(_ contentSheet: ContentSheet)
     @objc func viewWillEndPresentation(_ contentSheet: ContentSheet)
     @objc func getIntialViewFrame(in bounds: CGRect) -> CGRect
-    @objc func panGestureInitiated(recognizer: UIPanGestureRecognizer, in contentSheet: ContentSheet)
+    @objc optional func panGestureInitiated(recognizer: UIPanGestureRecognizer, in contentSheet: ContentSheet)
     @objc optional func getPanDirection(_ gesture: UIPanGestureRecognizer, sheet contentSheet: ContentSheet, possibleStateChange possibleState: ContentSheetState) -> PanDirection
+    @objc optional func updateOtherGesturesIn(sheet contentSheet: ContentSheet, recognizer: UIPanGestureRecognizer, forscroll scrollView: UIScrollView)
     @objc optional func getPossibleStateChange(currentYPosition: CGFloat, parentHeight: CGFloat) -> ContentSheetState
     @objc func resetViewFrame(sheet contentSheet: ContentSheet)
 }
@@ -151,6 +152,19 @@ import Foundation
                         self?.delegate?.updateWhenPanGestureCompleted()
                         self?.delegate?.updateScrollingBehavior(isScrollEnabled: self?.checkScrollingAllowedWhenGestureEnds(withState: finalState) ?? false)
         })
+    }
+    
+    public func updateOtherGesturesIn(sheet contentSheet: ContentSheet, recognizer: UIPanGestureRecognizer, forscroll scrollView: UIScrollView){
+        var isScrollEnabled: Bool = false
+        let direction = self.getPanDirection(recognizer, sheet: contentSheet, possibleStateChange: self.getPossibleStateChange(currentYPosition: contentSheet._contentContainer.frame.minY, parentHeight: contentSheet.view.frame.height))
+        if (collapsedHeight <= expandedHeight)
+            &&
+            (((scrollView.contentOffset.y + scrollView.contentInset.top == 0) && (direction == .down)) || (self.state == .collapsed && collapsedHeight < expandedHeight)) {
+            isScrollEnabled = false
+        } else {
+            isScrollEnabled = true
+        }
+        delegate?.updateScrollingBehavior(isScrollEnabled: isScrollEnabled)
     }
     
     

@@ -165,6 +165,6 @@ import Foundation
     }
     
     fileprivate func isScrollingAllowed(withState finalState: ContentSheetState) -> Bool {
-        return false
+        return true
     }
 }

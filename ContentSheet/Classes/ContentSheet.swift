@@ -612,7 +612,7 @@ extension ContentSheet {
     
     @objc fileprivate func handlePan(_ recognizer: UIPanGestureRecognizer) {
         if let _ = _contentView {
-            contentSheetPresentationAnimator.panGestureInitiated(recognizer: recognizer, in: self)
+            contentSheetPresentationAnimator.panGestureInitiated?(recognizer: recognizer, in: self)
         }
     }
     
@@ -708,20 +708,9 @@ extension ContentSheet: UIGestureRecognizerDelegate {
         guard gestureRecognizer == _panGesture else {
             return false
         }
-        guard self.presentationType != .popUp else {
-            return false
-        }
-        if let direction = contentSheetPresentationAnimator.getPanDirection?(_panGesture, sheet: self, possibleStateChange: contentSheetPresentationAnimator.getPossibleStateChange?(currentYPosition: _contentContainer.frame.minY, parentHeight: self.view.frame.height) ?? .minimised) {
-            
-            if (collapsedHeight <= expandedHeight)
-                &&
-                (((scrollView.contentOffset.y + scrollView.contentInset.top == 0) && (direction == .down)) || (contentSheetPresentationAnimator.state == .collapsed && collapsedHeight < expandedHeight)) {
-                scrollView.isScrollEnabled = false
-            } else {
-                scrollView.isScrollEnabled = true
-            }
-        }
+        contentSheetPresentationAnimator.updateOtherGesturesIn?(sheet: self, recognizer: _panGesture, forscroll: scrollView)
         return false
+
     }
 }
 
