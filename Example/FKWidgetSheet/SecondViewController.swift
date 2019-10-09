@@ -22,38 +22,38 @@ import UIKit
 import ContentSheet
 
 class SecondViewController: UIViewController {
-
+    
     @IBOutlet @objc public weak var table: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Do any additional setup after loading the view.
         self.table.register(UITableViewCell.self, forCellReuseIdentifier: "id")
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-
+    
     /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
+     // MARK: - Navigation
+     
+     // In a storyboard-based application, you will often want to do a little preparation before navigation
+     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+     // Get the new view controller using segue.destinationViewController.
+     // Pass the selected object to the new view controller.
+     }
+     */
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         self.navigationItem.title = String(arc4random()%100)
     }
-
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
@@ -75,7 +75,7 @@ class SecondViewController: UIViewController {
         return UIScreen.main.bounds.height
     }
     
-
+    
     override func scrollViewToObserve(containedIn contentSheet: ContentSheet) -> UIScrollView? {
         return table
     }
@@ -119,10 +119,22 @@ extension SecondViewController: UITableViewDataSource, UITableViewDelegate {
                 }
             }
         } else {
-            if indexPath.row%2 == 0 {
-                cell?.textLabel?.text = "Present"
+            if indexPath.row == 0 {
+                cell?.textLabel?.text = "Content Sheet from bottom"
+            } else if indexPath.row == 1 {
+                cell?.textLabel?.text = "Content Sheet from top"
+            } else if indexPath.row ==  2{
+                cell?.textLabel?.text = "Content Sheet from left"
+            } else if indexPath.row == 3 {
+                cell?.textLabel?.text = "Content Sheet from right"
+            } else if indexPath.row == 4 {
+                cell?.textLabel?.text = "Popup from bottom"
+            } else if indexPath.row == 5 {
+                cell?.textLabel?.text = "Popup from top"
+            } else if indexPath.row == 6 {
+                cell?.textLabel?.text = "Popup from left"
             } else {
-                cell?.textLabel?.text = "Present NavigationController"
+                cell?.textLabel?.text = "Popup from right"
             }
         }
         return cell!
@@ -137,11 +149,11 @@ extension SecondViewController: UITableViewDataSource, UITableViewDelegate {
                     self.dismissContentSheet(animated: true)
                 case 1:
                     let secondVC = SecondViewController(nibName: nil, bundle: nil)
-                    self.present(inContentSheet: secondVC, animated: true)
+                    self.present(inContentSheet: secondVC, animated: true, direction: .bottomToTop)
                 case 2:
                     let secondVC = SecondViewController(nibName: nil, bundle: nil)
                     let navcon = UINavigationController(rootViewController: secondVC)
-                    self.present(inContentSheet: navcon, animated: true)
+                    self.present(inContentSheet: navcon, animated: true, direction: .bottomToTop)
                 default:
                     let secondVC = SecondViewController(nibName: nil, bundle: nil)
                     self.navigationController?.pushViewController(secondVC, animated: true)
@@ -153,23 +165,41 @@ extension SecondViewController: UITableViewDataSource, UITableViewDelegate {
                     self.dismissContentSheet(animated: true)
                 case 1:
                     let secondVC = SecondViewController(nibName: nil, bundle: nil)
-                    self.present(inContentSheet: secondVC, animated: true)
+                    self.present(inContentSheet: secondVC, animated: true, direction: .bottomToTop)
                 case 2:
                     let secondVC = SecondViewController(nibName: nil, bundle: nil)
                     let navcon = UINavigationController(rootViewController: secondVC)
-                    self.present(inContentSheet: navcon, animated: true)
+                    self.present(inContentSheet: navcon, animated: true, direction: .bottomToTop)
                 default:
                     break
                 }
             }
         } else {
-            if indexPath.row%2 == 0 {
+            if indexPath.row == 0 {
                 let secondVC = SecondViewController(nibName: nil, bundle: nil)
-                self.present(inContentSheet: secondVC, animated: true)
-            } else {
+                self.present(inContentSheet: secondVC, animated: true, direction: .bottomToTop)
+            } else if indexPath.row == 1 {
                 let secondVC = SecondViewController(nibName: nil, bundle: nil)
                 let navcon = UINavigationController(rootViewController: secondVC)
-                self.present(inContentSheet: navcon, animated: true)
+                self.present(inContentSheet: navcon, animated: true, direction: .topToBottom)
+            } else if indexPath.row == 2 {
+                let secondVC = SecondViewController(nibName: nil, bundle: nil)
+                self.present(inContentSheet: secondVC, animated: true, direction: .leftToRight)
+            } else if indexPath.row == 3 {
+                let secondVC = SecondViewController(nibName: nil, bundle: nil)
+                self.present(inContentSheet: secondVC, animated: true, direction: .rightToLeft)
+            } else if indexPath.row == 4 {
+                let secondVC = SecondViewController(nibName: nil, bundle: nil)
+                self.present(inPopUp: secondVC, animated: true, direction: .bottomToTop)
+            } else if indexPath.row == 5 {
+                let secondVC = SecondViewController(nibName: nil, bundle: nil)
+                self.present(inPopUp: secondVC, animated: true, direction: .topToBottom)
+            } else if indexPath.row == 6 {
+                let secondVC = SecondViewController(nibName: nil, bundle: nil)
+                self.present(inPopUp: secondVC, animated: true, direction: .leftToRight)
+            } else {
+                let secondVC = SecondViewController(nibName: nil, bundle: nil)
+                self.present(inPopUp: secondVC, animated: true, direction: .rightToLeft)
             }
         }
     }

@@ -116,7 +116,7 @@ import UIKit
         animator.duration = duration
         return animator
     }
-
+    
     @objc public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         let animator: ContentSheetAnimator = ContentSheetAnimator()
         animator.duration = duration
@@ -141,7 +141,7 @@ import UIKit
             _overlay = sheet.blurBackground ? _blurView(sheet.blurStyle) : _dimmingView()
             _overlay!.alpha = 0.0
             self.containerView?.insertSubview(_overlay!, at: 0)
-
+            
             guard let coordinator = presentedViewController.transitionCoordinator else {
                 _overlay!.alpha = 1.0
                 return
@@ -152,13 +152,13 @@ import UIKit
             })
         }
     }
-
+    
     public override func presentationTransitionDidEnd(_ completed: Bool) {
         if !completed {
             self._overlay?.removeFromSuperview()
         }
     }
-
+    
     public override func dismissalTransitionWillBegin() {
         if let sheet = self.presentedViewController as? ContentSheet, !sheet.blurBackground {
             guard let coordinator = presentedViewController.transitionCoordinator else {
@@ -171,7 +171,7 @@ import UIKit
             })
         }
     }
-
+    
     public override func dismissalTransitionDidEnd(_ completed: Bool) {
         if completed {
             self._overlay?.removeFromSuperview()
@@ -185,17 +185,17 @@ import UIKit
     }
     
     override public func size(forChildContentContainer container: UIContentContainer,
-                       withParentContainerSize parentSize: CGSize) -> CGSize {
+                              withParentContainerSize parentSize: CGSize) -> CGSize {
         return parentSize
     }
-
+    
     @objc override public var frameOfPresentedViewInContainerView: CGRect {
         var frame: CGRect = .zero
         frame.size = size(forChildContentContainer: presentedViewController,
                           withParentContainerSize: containerView!.bounds.size)
         return frame
     }
-
+    
     
     private var _overlay: UIView?
     
@@ -207,7 +207,7 @@ import UIKit
         
         let recognizer = UITapGestureRecognizer(target: self, action: #selector(_handleTap(recognizer:)))
         dimmingView.addGestureRecognizer(recognizer)
-
+        
         return dimmingView
     }
     
@@ -219,36 +219,8 @@ import UIKit
         
         return effectView
     }
-
+    
     @objc private dynamic func _handleTap(recognizer: UITapGestureRecognizer) {
         presentingViewController.dismiss(animated: true)
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
