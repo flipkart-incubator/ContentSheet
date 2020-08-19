@@ -1046,6 +1046,11 @@ extension UIViewController: ContentSheetContentProtocol {
     @objc open func dismissContentSheet(animated flag: Bool, completion: (() -> Swift.Void)? = nil) {
         self.contentSheet()?.dismiss(animated: true, completion: completion)
     }
+    
+    open func contentSheetWillBeginTouchHandling(_ sheet: ContentSheet) {
+        
+    }
+
 }
 
 
@@ -1095,6 +1100,19 @@ extension UIView: ContentSheetContentProtocol {
     @objc public func contentSheet() -> ContentSheet? {
         return ContentSheet.contentSheet(content: self)
     }
+    
+    open func collapsedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
+        return 0
+    }
+    
+    open func expandedHeight(containedIn contentSheet: ContentSheet) -> CGFloat {
+        return 0
+    }
+    
+    open func scrollViewToObserve(containedIn contentSheet: ContentSheet) -> UIScrollView? {
+        return nil
+    }
+
 }
 
 extension UIView {
