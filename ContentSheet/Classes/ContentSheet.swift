@@ -94,7 +94,7 @@ fileprivate enum PanDirection {
     //Utility
     fileprivate var _safeAreaInsets: UIEdgeInsets {
         if #available(iOS 11.0, *) {
-            return self.view.safeAreaInsets
+            return UIApplication.shared.keyWindow?.safeAreaInsets ?? self.view.safeAreaInsets
         } else {
             return UIEdgeInsets.init(top: UIApplication.shared.statusBarFrame.maxY, left: 0, bottom: 0, right: 0)
         }
